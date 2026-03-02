@@ -14,8 +14,6 @@ interface PulsePostProps {
 }
 
 export function PulsePost({ post }: PulsePostProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [showComments, setShowComments] = useState(false);
   const { user, role } = useAuth();
   const router = useRouter();
   
@@ -40,6 +38,7 @@ export function PulsePost({ post }: PulsePostProps) {
   };
   
   // HTML makes it hard to safely truncate via strings, so we will use a max height and hidden overflow
+  const [showComments, setShowComments] = useState(false);
 
   return (
     <View className="bg-finance-surface rounded-2xl p-6 mb-4 border border-finance-border shadow-sm">
@@ -78,13 +77,26 @@ export function PulsePost({ post }: PulsePostProps) {
         </View>
       </Pressable>
 
-      {post.relatedIpoId && (
-        <View className="mt-4 pt-4 border-t border-finance-border/50">
+      <View className="flex-row items-center mt-4 pt-4 border-t border-finance-border/50 space-x-4">
+        <Pressable onPress={() => setShowComments(!showComments)} className="flex-row items-center space-x-2 active:opacity-70">
+          <MaterialCommunityIcons name="comment-outline" size={18} color={showComments ? "#3B82F6" : "#A0AEC0"} />
+          <Text className={`${showComments ? 'text-finance-accent' : 'text-finance-textMuted'} font-bold text-sm`}>
+            {showComments ? 'Hide Comments' : 'Comment'}
+          </Text>
+        </Pressable>
+
+        {post.relatedIpoId && (
           <Link href={`/ipo/${post.relatedIpoId}`} asChild>
-            <Pressable className="bg-finance-accent/10 self-start px-4 py-2 flex-row items-center rounded-lg active:opacity-70 border border-finance-accent/20">
-              <Text className="text-finance-accent font-bold text-sm tracking-wide">View Related IPO Details</Text>
+            <Pressable className="bg-finance-accent/10 px-3 py-1.5 flex-row items-center rounded-lg active:opacity-70 border border-finance-accent/20">
+              <Text className="text-finance-accent font-bold text-xs">IPO Details →</Text>
             </Pressable>
           </Link>
+        )}
+      </View>
+
+      {showComments && (
+        <View className="mt-2">
+          <Comments targetId={post.id} targetType="pulse" />
         </View>
       )}
     </View>

@@ -45,6 +45,9 @@ export default function Comments({ targetId, targetType }: CommentsProps) {
       })) as UserComment[];
       setComments(data);
       setLoading(false);
+    }, (error) => {
+      console.error("Error fetching comments:", error);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -99,30 +102,27 @@ export default function Comments({ targetId, targetType }: CommentsProps) {
       
       {/* Input Section */}
       <View className="flex-row items-end space-x-3 mb-6">
-        <View className="flex-1">
-          <Pressable 
-            onPress={() => {
-              if (!user) {
+        <View className="flex-1 relative">
+          <TextInput
+            placeholder={user ? "Add a comment..." : "Log in to comment..."}
+            placeholderTextColor="#64748B"
+            multiline
+            editable={!!user}
+            value={newComment}
+            onChangeText={setNewComment}
+            className="bg-finance-dark text-finance-text px-4 py-3 rounded-xl border border-finance-border focus:border-finance-accent min-h-[60px]"
+          />
+          {!user && (
+            <Pressable 
+              className="absolute inset-0 z-10"
+              onPress={() => {
                 Alert.alert('Login Required', 'Please log in to leave a comment.', [
                   { text: 'Cancel', style: 'cancel' },
                   { text: 'Login', onPress: () => router.push('/(auth)/login') }
                 ]);
-              }
-            }}
-            className="flex-1"
-          >
-            <View pointerEvents={user ? 'auto' : 'none'} className="flex-1">
-              <TextInput
-                placeholder={user ? "Add a comment..." : "Log in to comment..."}
-                placeholderTextColor="#64748B"
-                multiline
-                editable={!!user}
-                value={newComment}
-                onChangeText={setNewComment}
-                className="bg-finance-dark text-finance-text px-4 py-3 rounded-xl border border-finance-border focus:border-finance-accent min-h-[60px]"
-              />
-            </View>
-          </Pressable>
+              }}
+            />
+          )}
         </View>
         <Pressable 
           onPress={() => {

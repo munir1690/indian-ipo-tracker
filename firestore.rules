@@ -26,10 +26,18 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // pulse collection: Anyone can read, only admins can write
+    // pulse collection: Anyone can read, only admins or authors can write/delete
     match /pulse/{pulseId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow create: if isAdmin(); // Only admins can start a pulse post for now, or you can allow experts later
+      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.authorId);
+    }
+
+    // comments collection: Anyone can read, authenticated users can write, only authors or admins can delete
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.authorId);
     }
   }
 }

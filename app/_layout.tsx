@@ -35,20 +35,22 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (Platform.OS === 'web') {
-      if (!document.getElementById('expo-web-fonts')) {
+      // Ensure the fonts are correctly registered for the web.
+      // Even with the firebase fix, having these explicitly declared handles some 
+      // edge cases where the @expo/vector-icons auto-injection fails.
+      if (!document.getElementById('expo-web-icons')) {
         const style = document.createElement('style');
-        style.id = 'expo-web-fonts';
-        style.type = 'text/css';
-        style.appendChild(document.createTextNode(`
+        style.id = 'expo-web-icons';
+        style.textContent = `
           @font-face {
             font-family: 'MaterialCommunityIcons';
-            src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
+            src: url('./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
           }
           @font-face {
             font-family: 'MaterialIcons';
-            src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
+            src: url('./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
           }
-        `));
+        `;
         document.head.appendChild(style);
       }
     }
