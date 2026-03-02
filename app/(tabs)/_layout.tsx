@@ -39,6 +39,13 @@ export default function TabLayout() {
                 <Text className={`text-base ${pathname === '/saved' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Saved</Text>
               </Pressable>
             </Link>
+            {role === 'admin' && (
+              <Link href="/admin/users" asChild>
+                <Pressable>
+                  <Text className={`text-base ${pathname === '/admin/users' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Users</Text>
+                </Pressable>
+              </Link>
+            )}
             <Link href="/profile" asChild>
               <Pressable>
                 <Text className={`text-base ${pathname === '/profile' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>{profileLabel}</Text>

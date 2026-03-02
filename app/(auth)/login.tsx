@@ -65,16 +65,27 @@ export default function LoginScreen() {
       
       // Check if user document exists, if not create it
       const docRef = doc(db, 'users', result.user.uid);
-      await setDoc(docRef, {
-        email: result.user.email,
-        firstName: googleFirstName,
-        lastName: googleLastName,
-        role: 'user', // Note: If the user is an admin, merge:true will NOT overwrite this if we use setDoc cleverly. However, relying on merge true means we might overwrite role to 'user' if we're not careful. Let's ONLY set role and createdAt if the document is new.
-        // But setDoc with merge: true will overwrite fields if they are provided. 
-        // A better approach is to only set name and email, and rely on firestore rules or default roles?
-        // Actually merge: true merges the object. So role: 'user' WILL overwrite role: 'admin' each login.
-        // We should fix this.
-      }, { merge: true });
+      const { getDoc } = await import('firebase/firestore');
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          email: result.user.email,
+          firstName: googleFirstName,
+          lastName: googleLastName,
+          role: 'user',
+          theme: 'light',
+          savedIPOs: [],
+          createdAt: new Date().toISOString()
+        });
+      } else {
+        const { updateDoc } = await import('firebase/firestore');
+        await updateDoc(docRef, {
+          email: result.user.email,
+          firstName: googleFirstName,
+          lastName: googleLastName,
+        });
+      }
       
       router.back();
     } catch (error: any) {

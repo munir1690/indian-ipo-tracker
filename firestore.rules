@@ -12,7 +12,12 @@ service cloud.firestore {
 
     // users collection: Users can read/write their own documents
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Allow read/write if the user is an admin OR if the user is the owner
+      // CRITICAL: Prevent researchers from changing their own role
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow create: if request.auth != null && request.auth.uid == userId && 
+                    (!request.resource.data.keys().hasAll(['role']) || request.resource.data.role == 'user');
+      allow update: if request.auth != null && (isAdmin() || (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])));
     }
 
     // ipos collection: Anyone can read, only admins can write

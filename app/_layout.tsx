@@ -4,38 +4,62 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider } from '@/context/AuthContext';
+import { useAuth, AuthProvider } from '@/context/AuthContext';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
 export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
+  );
+}
+
+function RootLayoutNav() {
+  const { theme, loading: authLoading } = useAuth();
+  const { colorScheme: nativeColorScheme, setColorScheme: setNativeColorScheme } = useNativewindColorScheme();
   const colorScheme = useColorScheme();
+
+  // Sync nativewind color scheme with AuthContext theme
+  useEffect(() => {
+    if (theme && theme !== nativeColorScheme) {
+      setNativeColorScheme(theme);
+    }
+  }, [theme, nativeColorScheme, setNativeColorScheme]);
+
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     if (Platform.OS === 'web') {
-      if (colorScheme === 'dark') {
+      if (isDark) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
     }
-  }, [colorScheme]);
+  }, [isDark]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          <Stack.Screen name="(auth)/login" options={{ headerShown: false, presentation: 'modal' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </AuthProvider>
+    <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: isDark ? '#121212' : '#FFFFFF' },
+          headerTintColor: isDark ? '#FFFFFF' : '#1E293B',
+          headerShadowVisible: false,
+        }}
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="(auth)/login" options={{ headerShown: false, presentation: 'modal' }} />
+      </Stack>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
   );
 }

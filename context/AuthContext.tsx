@@ -8,8 +8,10 @@ interface AuthContextType {
   role: 'admin' | 'user' | null;
   firstName: string | null;
   lastName: string | null;
+  theme: 'light' | 'dark';
   savedIPOs: string[];
   loading: boolean;
+  updateTheme: (newTheme: 'light' | 'dark') => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,8 +19,10 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   firstName: null,
   lastName: null,
+  theme: 'light',
   savedIPOs: [],
   loading: true,
+  updateTheme: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -26,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<'admin' | 'user' | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [savedIPOs, setSavedIPOs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,11 +48,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setRole(data.role || 'user');
             setFirstName(data.firstName || null);
             setLastName(data.lastName || null);
+            setTheme(data.theme || 'light');
             setSavedIPOs(data.savedIPOs || []);
           } else {
             setRole('user'); // Default role
             setFirstName(null);
             setLastName(null);
+            setTheme('light');
             setSavedIPOs([]);
           }
           setLoading(false);
@@ -56,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setRole('user');
           setFirstName(null);
           setLastName(null);
+          setTheme('light');
           setSavedIPOs([]);
           setLoading(false);
         });
@@ -63,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setRole(null);
         setFirstName(null);
         setLastName(null);
+        setTheme('light');
         setSavedIPOs([]);
         setLoading(false);
         if (unsubscribeDoc) unsubscribeDoc();
@@ -75,8 +84,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const updateTheme = async (newTheme: 'light' | 'dark') => {
+    if (!user) return;
+    try {
+      const { updateDoc } = await import('firebase/firestore');
+      await updateDoc(doc(db, 'users', user.uid), { theme: newTheme });
+    } catch (error) {
+      console.error("Error updating theme:", error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, role, firstName, lastName, savedIPOs, loading }}>
+    <AuthContext.Provider value={{ user, role, firstName, lastName, theme, savedIPOs, loading, updateTheme }}>
       {children}
     </AuthContext.Provider>
   );

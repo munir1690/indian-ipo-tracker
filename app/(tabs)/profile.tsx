@@ -9,9 +9,9 @@ import RichTextEditor from '@/components/RichTextEditor';
 import { useColorScheme } from 'nativewind';
 
 export default function ProfileScreen() {
-  const { user, role, firstName, lastName, loading } = useAuth();
+  const { user, role, firstName, lastName, theme, loading, updateTheme } = useAuth();
   const router = useRouter();
-  const { colorScheme, toggleColorScheme } = useColorScheme();
+  const { colorScheme, toggleColorScheme: toggleNativewindScheme } = useColorScheme();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editFirstName, setEditFirstName] = useState(firstName || '');
@@ -173,7 +173,14 @@ export default function ProfileScreen() {
             <Text className="text-finance-textMuted">Enabled ›</Text>
           </Pressable>
 
-          <Pressable onPress={toggleColorScheme} className="bg-finance-surface p-4 rounded-xl border border-finance-border flex-row justify-between items-center active:opacity-70">
+          <Pressable 
+            onPress={() => {
+              const newScheme = colorScheme === 'dark' ? 'light' : 'dark';
+              toggleNativewindScheme();
+              updateTheme(newScheme);
+            }} 
+            className="bg-finance-surface p-4 rounded-xl border border-finance-border flex-row justify-between items-center active:opacity-70"
+          >
             <Text className="text-finance-text font-medium">Appearance</Text>
             <Text className="text-finance-textMuted">{colorScheme === 'dark' ? 'Dark' : 'Light'} ›</Text>
           </Pressable>
