@@ -44,29 +44,28 @@ export default function PipelineScreen() {
   return (
     <View className="flex-1 bg-finance-dark">
       <View className="p-5 flex-1 max-w-3xl w-full mx-auto">
-        <View className="mb-6 mt-6 flex-row justify-between items-end">
-          <View>
-            <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">IPO Pipeline</Text>
+        <View className="mb-6 mt-6 flex-row justify-between items-start">
+          <View className="flex-1 mr-4">
+            <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">IPOs</Text>
             <Text className="text-finance-textMuted font-medium">Track and analyze upcoming offerings</Text>
           </View>
-          <View className="flex-row items-center space-x-4">
-            {role === 'admin' && (
-              <Pressable 
-                onPress={() => router.push('/admin/manage-ipo')}
-                className="bg-finance-accent px-4 py-2 rounded-xl active:opacity-80"
-              >
-                <Text className="text-white font-bold text-sm">+ New IPO</Text>
-              </Pressable>
-            )}
-            <View className="flex-row bg-finance-surface rounded-lg p-1 border border-finance-border">
-              <Pressable onPress={() => setViewMode('List')} className={`px-3 py-1.5 rounded-md ${viewMode === 'List' ? 'bg-finance-card' : ''}`}>
-                <Text className={`text-sm font-semibold ${viewMode === 'List' ? 'text-finance-text' : 'text-finance-textMuted'}`}>List</Text>
-              </Pressable>
-              <Pressable onPress={() => setViewMode('Calendar')} className={`px-3 py-1.5 rounded-md ${viewMode === 'Calendar' ? 'bg-finance-card' : ''}`}>
-                <Text className={`text-sm font-semibold ${viewMode === 'Calendar' ? 'text-finance-text' : 'text-finance-textMuted'}`}>Calendar</Text>
-              </Pressable>
-            </View>
-          </View>
+          {role === 'admin' && (
+            <Pressable 
+              onPress={() => router.push('/admin/manage-ipo')}
+              className="bg-finance-accent px-4 py-2 rounded-xl active:opacity-80"
+            >
+              <Text className="text-white font-bold text-sm">+ New IPO</Text>
+            </Pressable>
+          )}
+        </View>
+
+        <View className="flex-row mb-6 bg-finance-surface rounded-xl p-1 border border-finance-border self-start">
+          <Pressable onPress={() => setViewMode('List')} className={`px-4 py-2 rounded-lg ${viewMode === 'List' ? 'bg-finance-card shadow-sm' : ''}`}>
+            <Text className={`text-sm font-bold ${viewMode === 'List' ? 'text-finance-text' : 'text-finance-textMuted'}`}>List View</Text>
+          </Pressable>
+          <Pressable onPress={() => setViewMode('Calendar')} className={`px-4 py-2 rounded-lg ${viewMode === 'Calendar' ? 'bg-finance-card shadow-sm' : ''}`}>
+            <Text className={`text-sm font-bold ${viewMode === 'Calendar' ? 'text-finance-text' : 'text-finance-textMuted'}`}>Calendar</Text>
+          </Pressable>
         </View>
         
         <SegmentedControl 
