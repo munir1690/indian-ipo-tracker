@@ -1,20 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
+import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useAuth } from '@/context/AuthContext';
 import RichTextEditor from '@/components/RichTextEditor';
 
 export default function ManageInsightScreen() {
-  const { firstName, lastName } = useAuth();
+  const { firstName, lastName, user } = useAuth();
   const defaultAuthor = firstName && lastName ? `${firstName} ${lastName}` : 'Alpha Expert';
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState(defaultAuthor);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const isEditing = !!id;
+
+  useEffect(() => {
+    async function fetchPost() {
+      if (!id) return;
+      setLoading(true);
+      try {
+        const docRef = doc(db, 'pulse', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setTitle(data.title || '');
+          setContent(data.content || '');
+          setAuthor(data.author || '');
+        } else {
+          Alert.alert('Error', 'Post not found');
+          router.back();
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPost();
+  }, [id]);
 
   const handleSave = async () => {
     if (!title || !content || !author) {
@@ -24,25 +53,43 @@ export default function ManageInsightScreen() {
 
     setSaving(true);
     try {
-      await addDoc(collection(db, 'pulse'), {
-        title,
-        content,
-        author,
-        date: new Date().toISOString(),
-        timestamp: serverTimestamp(),
-      });
+      if (isEditing && id) {
+        await updateDoc(doc(db, 'pulse', id), {
+          title,
+          content,
+          author,
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        await addDoc(collection(db, 'pulse'), {
+          title,
+          content,
+          author,
+          authorId: user?.uid || null,
+          date: new Date().toISOString(),
+          timestamp: serverTimestamp(),
+        });
+      }
       router.back();
     } catch (error: any) {
-      console.error("Error adding insight:", error);
+      console.error("Error saving insight:", error);
       Alert.alert('Error', 'Failed to save insight. ' + error.message);
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <View className="flex-1 bg-finance-dark items-center justify-center">
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
+    );
+  }
+
   return (
     <>
-      <Stack.Screen options={{ title: 'New Post' }} />
+      <Stack.Screen options={{ title: isEditing ? 'Edit Post' : 'New Post' }} />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1 bg-finance-dark"
@@ -52,9 +99,9 @@ export default function ManageInsightScreen() {
           <Pressable onPress={() => router.back()} className="p-2 -ml-2">
             <Text className="text-finance-accent text-lg font-medium">Cancel</Text>
           </Pressable>
-          <Text className="text-finance-text text-xl font-bold">New Update</Text>
+          <Text className="text-finance-text text-xl font-bold">{isEditing ? 'Edit Update' : 'New Update'}</Text>
           <Pressable onPress={handleSave} disabled={saving} className={`${saving ? 'opacity-50' : 'active:opacity-70'}`}>
-            <Text className="text-finance-accent text-lg font-bold">Post</Text>
+            <Text className="text-finance-accent text-lg font-bold">{isEditing ? 'Save' : 'Post'}</Text>
           </Pressable>
         </View>
 

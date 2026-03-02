@@ -31,7 +31,13 @@ async function createAdmin() {
     const db = admin.firestore();
 
     const username = 'munir1690@example.com';
-    const password = 'SuperComplexPassword!2026';
+    const password = process.env.ADMIN_PASSWORD;
+    
+    if (!password) {
+      console.error("❌ Error: ADMIN_PASSWORD environment variable is required.");
+      console.error("Run it like: ADMIN_PASSWORD='my_secure_password' node scripts/create-admin.js");
+      process.exit(1);
+    }
 
     console.log(`Creating user ${username}...`);
     

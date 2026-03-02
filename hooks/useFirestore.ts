@@ -77,3 +77,26 @@ export function useIPODetail(id: string) {
 
   return { ipo, loading };
 }
+
+export function usePulseDetail(id: string) {
+  const [post, setPost] = useState<MarketUpdate | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    const unsubscribe = onSnapshot(doc(db, 'pulse', id), (snapshot) => {
+      if (snapshot.exists()) {
+        const docData = snapshot.data();
+        let derivedDate = docData.date;
+        if (!derivedDate) {
+           derivedDate = docData.timestamp?.toDate?.()?.toISOString() || new Date().toISOString();
+        }
+        setPost({ ...docData, date: derivedDate, id: snapshot.id } as MarketUpdate);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [id]);
+
+  return { post, loading };
+}

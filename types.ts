@@ -32,5 +32,17 @@ export interface MarketUpdate {
   title: string;
   date: string; // ISO string
   content: string; // Markdown formatted text
+  author?: string;
+  authorId?: string;
   relatedIpoId?: string; // Optional property linking a pulse post to a specific IPO
+}
+
+export interface UserComment {
+  id: string;
+  targetId: string;
+  targetType: 'pulse' | 'ipo';
+  text: string;
+  authorName: string;
+  authorId: string;
+  createdAt: string; // ISO String
 }

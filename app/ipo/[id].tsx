@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import RichTextRenderer from '@/components/RichTextRenderer';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/firebase';
+import Comments from '@/components/Comments';
 
 export default function IPODetailScreen() {
   const { id } = useLocalSearchParams();
@@ -275,6 +276,9 @@ export default function IPODetailScreen() {
           </Text>
           <RichTextRenderer content={listing.expertTake.remarks} />
         </View>
+
+        {/* Discussion */}
+        <Comments targetId={ipoId} targetType="ipo" />
       </View>
     </ScrollView>
     </>

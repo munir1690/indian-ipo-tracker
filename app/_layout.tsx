@@ -33,6 +33,27 @@ export default function RootLayout() {
     }
   }, [loaded, error]);
 
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      if (!document.getElementById('expo-web-fonts')) {
+        const style = document.createElement('style');
+        style.id = 'expo-web-fonts';
+        style.type = 'text/css';
+        style.appendChild(document.createTextNode(`
+          @font-face {
+            font-family: 'MaterialCommunityIcons';
+            src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
+          }
+          @font-face {
+            font-family: 'MaterialIcons';
+            src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
+          }
+        `));
+        document.head.appendChild(style);
+      }
+    }
+  }, []);
+
   if (!loaded && !error) {
     return null;
   }

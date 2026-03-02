@@ -13,15 +13,22 @@ if (!admin.apps.length) {
 const auth = admin.auth();
 const db = admin.firestore();
 
+const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+const userPassword = process.env.SEED_USER_PASSWORD;
+
+if (!adminPassword || !userPassword) {
+  console.warn("⚠️ Warning: SEED_ADMIN_PASSWORD or SEED_USER_PASSWORD not set. Using insecure default passwords.");
+}
+
 const dummyUsers = [
   {
     email: 'admin@test.com',
-    password: 'AdminPassword123!',
+    password: adminPassword || 'AdminPassword123!',
     role: 'admin'
   },
   {
     email: 'user@test.com',
-    password: 'UserPassword123!',
+    password: userPassword || 'UserPassword123!',
     role: 'user'
   }
 ];
