@@ -28,6 +28,7 @@ export default function ManageInsightScreen() {
         title,
         content,
         author,
+        date: new Date().toISOString(),
         timestamp: serverTimestamp(),
       });
       router.back();

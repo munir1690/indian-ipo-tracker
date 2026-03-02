@@ -28,12 +28,29 @@ export function usePulse() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'pulse'), orderBy('date', 'desc'));
+    // We remove orderBy('date', 'desc') from the query because older documents
+    // might be missing the 'date' field, which causes them to be excluded by Firestore.
+    const q = query(collection(db, 'pulse'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-      })) as MarketUpdate[];
+      const data = snapshot.docs.map(doc => {
+        const docData = doc.data();
+        let derivedDate = docData.date;
+        if (!derivedDate) {
+           // Fallback for docs missing date
+           derivedDate = docData.timestamp?.toDate?.()?.toISOString() || new Date().toISOString();
+        }
+        return {
+          ...docData,
+          date: derivedDate,
+          id: doc.id
+        };
+      }) as MarketUpdate[];
+      
+      // Sort in-memory using the guaranteed date field
+      data.sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+      
       setPulse(data);
       setLoading(false);
     });
