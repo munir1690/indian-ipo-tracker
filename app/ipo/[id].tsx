@@ -1,11 +1,39 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useIPODetail } from '@/hooks/useFirestore';
+import { useAuth } from '@/context/AuthContext';
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 export default function IPODetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { ipo: listing, loading } = useIPODetail(typeof id === 'string' ? id : '');
+  const ipoId = typeof id === 'string' ? id : '';
+  const { ipo: listing, loading } = useIPODetail(ipoId);
+  const { user, role, savedIPOs } = useAuth();
+  
+  const isSaved = savedIPOs.includes(ipoId);
+
+  const toggleSave = async () => {
+    if (!user) {
+      Alert.alert("Login Required", "Please log in to save IPOs to your watchlist", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Login", onPress: () => router.push('/(auth)/login') }
+      ]);
+      return;
+    }
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      if (isSaved) {
+        await updateDoc(userRef, { savedIPOs: arrayRemove(ipoId) });
+      } else {
+        await updateDoc(userRef, { savedIPOs: arrayUnion(ipoId) });
+      }
+    } catch (error) {
+      console.error("Error toggling save:", error);
+    }
+  };
 
   const handleAddToCalendar = () => {
     if (!listing) return;
@@ -68,9 +96,26 @@ export default function IPODetailScreen() {
   return (
     <ScrollView className="flex-1 bg-finance-dark">
       <View className="max-w-3xl w-full mx-auto p-5 pb-10">
-        <Pressable onPress={() => router.back()} className="mb-6 self-start active:opacity-70">
-          <Text className="text-finance-accent font-semibold flex-row items-center">← Back</Text>
-        </Pressable>
+        <View className="flex-row justify-between items-center mb-6">
+          <Pressable onPress={() => router.back()} className="active:opacity-70">
+            <Text className="text-finance-accent font-semibold flex-row items-center">← Back</Text>
+          </Pressable>
+          <View className="flex-row space-x-3">
+            {role === 'admin' && (
+              <Pressable 
+                onPress={() => router.push(`/admin/manage-ipo?id=${ipoId}`)} 
+                className="px-4 py-1.5 rounded-full border bg-finance-dark border-finance-border active:opacity-70"
+              >
+                <Text className="text-finance-accent font-bold text-sm">Edit</Text>
+              </Pressable>
+            )}
+            <Pressable onPress={toggleSave} className={`px-4 py-1.5 rounded-full border ${isSaved ? 'bg-finance-accent/20 border-finance-accent' : 'bg-transparent border-finance-border'} active:opacity-70`}>
+              <Text className={`${isSaved ? 'text-finance-accent' : 'text-finance-textMuted'} font-bold text-sm`}>
+                {isSaved ? '★ Saved' : '☆ Save'}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
         
         <View className="flex-row justify-between items-start mb-8 border-b border-finance-border pb-6">
           <View className="flex-1 mr-4">

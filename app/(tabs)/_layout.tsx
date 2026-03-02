@@ -1,10 +1,14 @@
 import { Tabs } from 'expo-router';
 import { Platform, View, Text, Pressable } from 'react-native';
 import { Link, usePathname } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
 export default function TabLayout() {
   const pathname = usePathname();
   const isWeb = Platform.OS === 'web';
+  const { role, firstName, lastName } = useAuth();
+  
+  const profileLabel = firstName && lastName ? `${firstName} ${lastName}` : 'Profile';
 
   // Custom top nav for web
   if (isWeb) {
@@ -28,12 +32,18 @@ export default function TabLayout() {
                 <Text className={`text-base ${pathname === '/saved' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Saved</Text>
               </Pressable>
             </Link>
+            <Link href="/profile" asChild>
+              <Pressable>
+                <Text className={`text-base ${pathname === '/profile' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>{profileLabel}</Text>
+              </Pressable>
+            </Link>
           </View>
         </View>
         <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
           <Tabs.Screen name="index" />
           <Tabs.Screen name="pulse" />
           <Tabs.Screen name="saved" />
+          <Tabs.Screen name="profile" />
         </Tabs>
       </View>
     );
@@ -68,6 +78,12 @@ export default function TabLayout() {
         name="saved"
         options={{
           title: 'Saved',
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: profileLabel,
         }}
       />
     </Tabs>

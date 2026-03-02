@@ -5,13 +5,17 @@ import { IPOListCard } from '@/components/IPOListCard';
 import { Calendar } from 'react-native-calendars';
 import { format } from 'date-fns';
 import { useIPOs } from '@/hooks/useFirestore';
+import { useAuth } from '@/context/AuthContext';
 import { seedFirestore } from '@/seed';
+import { useRouter } from 'expo-router';
 
 export default function PipelineScreen() {
   const [filter, setFilter] = useState('Upcoming');
   const [viewMode, setViewMode] = useState<'List' | 'Calendar'>('List');
   const [selectedDate, setSelectedDate] = useState<string>('');
   const { ipos, loading } = useIPOs();
+  const { role } = useAuth();
+  const router = useRouter();
 
   const filteredIPOs = ipos.filter((ipo) => ipo.status === filter);
 
@@ -45,13 +49,23 @@ export default function PipelineScreen() {
             <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">IPO Pipeline</Text>
             <Text className="text-finance-textMuted font-medium">Track and analyze upcoming offerings</Text>
           </View>
-          <View className="flex-row bg-finance-surface rounded-lg p-1 border border-finance-border">
-            <Pressable onPress={() => setViewMode('List')} className={`px-3 py-1.5 rounded-md ${viewMode === 'List' ? 'bg-finance-card' : ''}`}>
-              <Text className={`text-sm font-semibold ${viewMode === 'List' ? 'text-finance-text' : 'text-finance-textMuted'}`}>List</Text>
-            </Pressable>
-            <Pressable onPress={() => setViewMode('Calendar')} className={`px-3 py-1.5 rounded-md ${viewMode === 'Calendar' ? 'bg-finance-card' : ''}`}>
-              <Text className={`text-sm font-semibold ${viewMode === 'Calendar' ? 'text-finance-text' : 'text-finance-textMuted'}`}>Calendar</Text>
-            </Pressable>
+          <View className="flex-row items-center space-x-4">
+            {role === 'admin' && (
+              <Pressable 
+                onPress={() => router.push('/admin/manage-ipo')}
+                className="bg-finance-accent px-4 py-2 rounded-xl active:opacity-80"
+              >
+                <Text className="text-white font-bold text-sm">+ New IPO</Text>
+              </Pressable>
+            )}
+            <View className="flex-row bg-finance-surface rounded-lg p-1 border border-finance-border">
+              <Pressable onPress={() => setViewMode('List')} className={`px-3 py-1.5 rounded-md ${viewMode === 'List' ? 'bg-finance-card' : ''}`}>
+                <Text className={`text-sm font-semibold ${viewMode === 'List' ? 'text-finance-text' : 'text-finance-textMuted'}`}>List</Text>
+              </Pressable>
+              <Pressable onPress={() => setViewMode('Calendar')} className={`px-3 py-1.5 rounded-md ${viewMode === 'Calendar' ? 'bg-finance-card' : ''}`}>
+                <Text className={`text-sm font-semibold ${viewMode === 'Calendar' ? 'text-finance-text' : 'text-finance-textMuted'}`}>Calendar</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
         

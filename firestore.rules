@@ -1,0 +1,30 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the current user is an admin
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // users collection: Users can read/write their own documents
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ipos collection: Anyone can read, only admins can write
+    match /ipos/{ipoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // pulse collection: Anyone can read, only admins can write
+    match /pulse/{pulseId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
