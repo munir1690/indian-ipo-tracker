@@ -46,7 +46,7 @@ export default function IPODetailScreen() {
     children, 
     isExpanded, 
     onToggle, 
-    initialHeight = 150 
+    initialHeight = 45 
   }: { 
     children: React.ReactNode, 
     isExpanded: boolean, 
@@ -58,21 +58,24 @@ export default function IPODetailScreen() {
 
     return (
       <View className="w-full">
-        <View style={{ maxHeight: isExpanded ? undefined : initialHeight, overflow: 'hidden', width: '100%' }}>
+        <View style={{ maxHeight: isExpanded ? undefined : initialHeight, overflow: 'hidden', width: '100%', position: 'relative' }}>
           <View onLayout={(e) => setContentHeight(e.nativeEvent.layout.height)} style={{ width: '100%' }}>
-            {children}
+             {children}
           </View>
+          {needsExpansion && !isExpanded && (
+            <View className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-finance-surface to-transparent" />
+          )}
         </View>
         
         {needsExpansion && (
           <Pressable 
             onPress={onToggle} 
-            className="mt-3 pt-3 border-t border-finance-border/30 flex-row justify-center items-center active:opacity-70 w-full"
+            className="mt-2 pt-2 border-t border-finance-border/30 flex-row justify-center items-center active:opacity-70 w-full"
           >
-            <Text className="text-finance-accent font-bold mr-1">
+            <Text className="text-finance-accent font-bold mr-1 text-xs">
               {isExpanded ? 'Show Less' : 'Read More'}
             </Text>
-            <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={16} color="#3B82F6" />
+            <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={14} color="#3B82F6" />
           </Pressable>
         )}
       </View>
@@ -369,7 +372,7 @@ export default function IPODetailScreen() {
         {/* Discussion */}
         <View className="mb-8 bg-finance-surface rounded-2xl p-4 border border-finance-border shadow-sm">
           <Text className="text-xl font-extrabold text-finance-text tracking-tight mb-2">Discussion</Text>
-          <ExpandableContent isExpanded={expandedSections.discussion} onToggle={() => toggleSection('discussion')} initialHeight={250}>
+          <ExpandableContent isExpanded={expandedSections.discussion} onToggle={() => toggleSection('discussion')}>
             <Comments targetId={ipoId} targetType="ipo" hideTitle />
           </ExpandableContent>
         </View>
