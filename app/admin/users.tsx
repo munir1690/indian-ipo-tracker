@@ -3,7 +3,6 @@ import { View, Text, FlatList, Pressable, ActivityIndicator, Alert } from 'react
 import { collection, query, onSnapshot, doc, updateDoc, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Stack, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 
 interface UserData {
   id: string;
@@ -35,7 +34,7 @@ export default function UserManagementScreen() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   const toggleRole = async (user: UserData) => {
     const newRole = user.role === 'admin' ? 'user' : 'admin';

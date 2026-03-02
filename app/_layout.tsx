@@ -23,9 +23,9 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { theme, loading: authLoading } = useAuth();
+  const { theme } = useAuth();
   const { colorScheme: nativeColorScheme, setColorScheme: setNativeColorScheme } = useNativewindColorScheme();
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme(); // Removed as per instruction
 
   // Sync nativewind color scheme with AuthContext theme
   useEffect(() => {

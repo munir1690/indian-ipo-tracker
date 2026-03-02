@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ActivityIndicator, Alert, TextInput } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, Alert, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
@@ -17,6 +17,7 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [editFirstName, setEditFirstName] = useState(firstName || '');
   const [editLastName, setEditLastName] = useState(lastName || '');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [bio, setBio] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -28,8 +29,9 @@ export default function ProfileScreen() {
         try {
           const docRef = doc(db, 'users', user.uid);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().bio) {
-            setBio(docSnap.data().bio);
+          if (docSnap.exists()) {
+            if (docSnap.data().bio) setBio(docSnap.data().bio);
+            if (docSnap.data().avatarUrl) setAvatarUrl(docSnap.data().avatarUrl);
           }
         } catch (error) {
           console.error("Error fetching bio:", error);
@@ -55,6 +57,7 @@ export default function ProfileScreen() {
       await setDoc(docRef, {
         firstName: editFirstName,
         lastName: editLastName,
+        avatarUrl: avatarUrl,
         bio: bio
       }, { merge: true });
       setIsEditing(false);
@@ -96,10 +99,16 @@ export default function ProfileScreen() {
 
         <View className="bg-finance-surface rounded-2xl p-6 mb-6 border border-finance-border shadow-sm flex-row items-center justify-between">
           <View className="flex-row items-center flex-1">
-            <View className="w-16 h-16 bg-finance-accent/20 rounded-full items-center justify-center mr-5 border border-finance-accent/30">
-              <Text className="text-finance-accent text-2xl font-bold uppercase">
-                {firstName ? firstName[0] : (user.email ? user.email[0] : 'U')}
-              </Text>
+            <View className="w-16 h-16 bg-finance-surface rounded-full items-center justify-center mr-5 border border-finance-border overflow-hidden">
+              {avatarUrl ? (
+                <Image source={{ uri: avatarUrl }} className="w-full h-full" resizeMode="cover" />
+              ) : (
+                <View className="w-full h-full bg-finance-accent/20 items-center justify-center">
+                  <Text className="text-finance-accent text-2xl font-bold uppercase">
+                    {firstName ? firstName[0] : (user.email ? user.email[0] : 'U')}
+                  </Text>
+                </View>
+              )}
             </View>
             <View className="flex-1">
               <Text className="text-xl font-bold text-finance-text mb-1" numberOfLines={1}>
@@ -147,6 +156,16 @@ export default function ProfileScreen() {
                   onChangeText={setEditLastName}
                   className="bg-finance-dark text-finance-text p-3 rounded-xl border border-finance-border focus:border-finance-accent"
                   placeholder="Last Name"
+                  placeholderTextColor="#666"
+                />
+              </View>
+              <View className="mt-4">
+                <Text className="text-finance-textMuted text-xs font-bold uppercase mb-2">Avatar URL (Optional)</Text>
+                <TextInput
+                  value={avatarUrl}
+                  onChangeText={setAvatarUrl}
+                  className="bg-finance-dark text-finance-text p-3 rounded-xl border border-finance-border focus:border-finance-accent"
+                  placeholder="https://example.com/avatar.png"
                   placeholderTextColor="#666"
                 />
               </View>

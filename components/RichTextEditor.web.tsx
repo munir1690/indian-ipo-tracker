@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
@@ -15,16 +15,10 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
   const isDark = colorScheme === 'dark';
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<View>(null);
-  if (Platform.OS !== 'web') {
-     return (
-       <View className="bg-finance-dark rounded-xl border border-finance-border overflow-hidden p-4">
-         <Text className="text-finance-text text-base">{value || placeholder}</Text>
-       </View>
-     )
-  }
-
+  
   // Web Implementation using contentEditable
   const editorRef = useRef<HTMLDivElement>(null);
+  const savedSelection = useRef<Range | null>(null);
 
   // Sync initial value only once to avoid cursor jumping
   useEffect(() => {
@@ -33,8 +27,14 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
     }
   }, [value, focused]);
 
+  if (Platform.OS !== 'web') {
+     return (
+       <View className="bg-finance-dark rounded-xl border border-finance-border overflow-hidden p-4">
+         <Text className="text-finance-text text-base">{value || placeholder}</Text>
+       </View>
+     )
+  }
   // Keep track of the current selection so we can restore it when clicking toolbar buttons
-  const savedSelection = useRef<Range | null>(null);
 
   const saveSelection = () => {
     const sel = window.getSelection();

@@ -1,6 +1,7 @@
 export interface IPOListing {
   id: string;
   companyName: string;
+  logoUrl?: string;
   expectedListingDate: string;
   status: 'Upcoming' | 'Active' | 'Listed';
   fundamentals: {

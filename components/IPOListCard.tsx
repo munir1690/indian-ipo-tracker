@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import { IPOListing } from '@/types';
 import { Link } from 'expo-router';
 
@@ -15,7 +15,14 @@ export function IPOListCard({ listing }: IPOListCardProps) {
   return (
     <Link href={`/ipo/${listing.id}`} asChild>
       <Pressable className="bg-finance-surface rounded-2xl p-5 mb-4 border border-finance-border shadow-sm active:opacity-80">
-        <View className="flex-row justify-between items-start mb-3">
+        <View className="flex-row items-center mb-3">
+          {listing.logoUrl && (
+            <Image 
+              source={{ uri: listing.logoUrl }} 
+              className="w-10 h-10 rounded-full bg-finance-dark border border-finance-border mr-3" 
+              resizeMode="contain" 
+            />
+          )}
           <Text className="text-xl font-extrabold text-finance-text flex-1 mr-3 tracking-tight">{listing.companyName}</Text>
           <View className={`px-3 py-1 rounded-full border ${tagColor}`}>
             <Text className={`text-[10px] uppercase tracking-wider font-bold ${tagColor.split(' ')[0]}`}>{listing.expertTake.tag}</Text>

@@ -18,6 +18,7 @@ export default function ManageIPOScreen() {
   
   // Minimal form state
   const [companyName, setCompanyName] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const [status, setStatus] = useState('Upcoming');
   const [expectedDate, setExpectedDate] = useState(new Date().toISOString().split('T')[0]);
   // Fundamentals
@@ -48,6 +49,7 @@ export default function ManageIPOScreen() {
           if (docSnap.exists()) {
             const data = docSnap.data() as IPOListing;
             setCompanyName(data.companyName);
+            setLogoUrl(data.logoUrl || '');
             setStatus(data.status);
             setExpectedDate(new Date(data.expectedListingDate).toISOString().split('T')[0]);
             setIssueSize(data.fundamentals?.issueSize || '');
@@ -113,6 +115,7 @@ export default function ManageIPOScreen() {
     try {
       const ipoData: Partial<IPOListing> = {
         companyName,
+        logoUrl,
         status: status as any,
         expectedListingDate: new Date(expectedDate).toISOString(),
         fundamentals: {
@@ -196,6 +199,17 @@ export default function ManageIPOScreen() {
               value={companyName}
               onChangeText={setCompanyName}
               placeholder="e.g. Acme Corp"
+              placeholderTextColor="#666"
+            />
+          </View>
+
+          <View className="mt-4">
+            <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-wider mb-2">Logo URL (Optional)</Text>
+            <TextInput
+              className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent"
+              value={logoUrl}
+              onChangeText={setLogoUrl}
+              placeholder="https://example.com/logo.png"
               placeholderTextColor="#666"
             />
           </View>

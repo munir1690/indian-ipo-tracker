@@ -1,5 +1,6 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking, Alert, Image, Dimensions } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { BarChart } from 'react-native-chart-kit';
 import { useIPODetail } from '@/hooks/useFirestore';
 import { useAuth } from '@/context/AuthContext';
 import RichTextRenderer from '@/components/RichTextRenderer';
@@ -12,6 +13,7 @@ export default function IPODetailScreen() {
   const ipoId = typeof id === 'string' ? id : '';
   const { ipo: listing, loading } = useIPODetail(ipoId);
   const { user, role, savedIPOs } = useAuth();
+  const screenWidth = Dimensions.get('window').width;
   
   const isSaved = savedIPOs.includes(ipoId);
 
@@ -122,7 +124,16 @@ export default function IPODetailScreen() {
         
         <View className="flex-row justify-between items-start mb-8 border-b border-finance-border pb-6">
           <View className="flex-1 mr-4">
-            <Text className="text-4xl font-extrabold text-finance-text mb-2 tracking-tight leading-tight">{listing.companyName}</Text>
+            <View className="flex-row items-center mb-2">
+              {listing.logoUrl && (
+                <Image 
+                  source={{ uri: listing.logoUrl }} 
+                  className="w-16 h-16 rounded-full bg-finance-dark border border-finance-border mr-4" 
+                  resizeMode="contain" 
+                />
+              )}
+              <Text className="text-4xl font-extrabold text-finance-text tracking-tight leading-tight flex-1">{listing.companyName}</Text>
+            </View>
             <View className="flex-row items-center space-x-3 mt-1">
               <Text className="text-finance-textMuted font-medium uppercase tracking-widest text-xs">Status:</Text>
               <View className="bg-finance-surface border border-finance-border px-3 py-1 rounded-full flex-row">
@@ -172,6 +183,51 @@ export default function IPODetailScreen() {
                    <Text className="text-finance-textMuted text-xs mb-1">Total</Text>
                    <Text className="text-finance-accent font-extrabold">{listing.extendedDetails.subscriptionRates.total}</Text>
                  </View>
+               </View>
+               {/* Subscription Chart */}
+               <View className="mt-6 items-center overflow-hidden w-full">
+                 <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-widest mb-4 self-start">Subscription Trends</Text>
+                 <BarChart
+                   data={{
+                     labels: ['QIB', 'NII', 'Retail', 'Total'],
+                     datasets: [
+                       {
+                         data: [
+                           parseFloat(listing.extendedDetails.subscriptionRates.qib || '') || 0,
+                           parseFloat(listing.extendedDetails.subscriptionRates.nii || '') || 0,
+                           parseFloat(listing.extendedDetails.subscriptionRates.retail || '') || 0,
+                           parseFloat(listing.extendedDetails.subscriptionRates.total || '') || 0,
+                         ],
+                       },
+                     ],
+                   }}
+                   width={Math.min(screenWidth - 80, 400)} // Adjust width based on screen size, add padding
+                   height={220}
+                   yAxisLabel=""
+                   yAxisSuffix="x"
+                   chartConfig={{
+                     backgroundColor: '#1E293B',
+                     backgroundGradientFrom: '#0F172A',
+                     backgroundGradientTo: '#1E293B',
+                     decimalPlaces: 2, 
+                     color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`, // finance-accent
+                     labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`, // finance-textMuted
+                     style: {
+                       borderRadius: 16,
+                     },
+                     propsForLabels: {
+                       fontSize: 10,
+                       fontWeight: 'bold',
+                     }
+                   }}
+                   verticalLabelRotation={0}
+                   showValuesOnTopOfBars={true}
+                   withHorizontalLabels={true}
+                   style={{
+                     marginVertical: 8,
+                     borderRadius: 16,
+                   }}
+                 />
                </View>
              </View>
           ) : (
