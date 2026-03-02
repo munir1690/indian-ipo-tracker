@@ -6,6 +6,7 @@ import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase';
 import RichTextEditor from '@/components/RichTextEditor';
+import RichTextRenderer from '@/components/RichTextRenderer';
 import { useColorScheme } from 'nativewind';
 
 export default function ProfileScreen() {
@@ -162,6 +163,13 @@ export default function ProfileScreen() {
             <Pressable onPress={handleSaveProfile} disabled={saving} className={`bg-finance-accent p-3 rounded-xl items-center ${saving ? 'opacity-50' : 'active:opacity-80'}`}>
               {saving ? <ActivityIndicator color="white" /> : <Text className="text-white font-bold">Save Changes</Text>}
             </Pressable>
+          </View>
+        )}
+        
+        {!isEditing && bio && (
+          <View className="bg-finance-surface rounded-2xl p-6 mb-6 border border-finance-border shadow-sm">
+            <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-wider mb-3">Your Bio</Text>
+            <RichTextRenderer content={bio} />
           </View>
         )}
 

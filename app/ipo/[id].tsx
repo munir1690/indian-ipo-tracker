@@ -217,9 +217,7 @@ export default function IPODetailScreen() {
           <Text className="text-2xl font-extrabold text-finance-text mb-4 mt-2 tracking-tight">
              Alpha Expert Take
           </Text>
-          <Text className="text-finance-textMuted text-base leading-relaxed font-medium">
-            {listing.expertTake.remarks}
-          </Text>
+          <RichTextRenderer content={listing.expertTake.remarks} />
         </View>
       </View>
     </ScrollView>
