@@ -1,5 +1,6 @@
 import { View, FlatList, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
+import { useColorScheme } from 'nativewind';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import { IPOListCard } from '@/components/IPOListCard';
 import { Calendar } from 'react-native-calendars';
@@ -16,6 +17,8 @@ export default function PipelineScreen() {
   const { ipos, loading } = useIPOs();
   const { role } = useAuth();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const filteredIPOs = ipos.filter((ipo) => ipo.status === filter);
 
@@ -99,18 +102,18 @@ export default function PipelineScreen() {
             <View className="rounded-2xl overflow-hidden border border-finance-border mb-6">
               <Calendar
                 theme={{
-                  backgroundColor: '#1E1E1E',
-                  calendarBackground: '#1E1E1E',
-                  textSectionTitleColor: '#A0A0A0',
+                  backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
+                  calendarBackground: isDark ? '#1E1E1E' : '#FFFFFF',
+                  textSectionTitleColor: isDark ? '#A0A0A0' : '#64748B',
                   selectedDayBackgroundColor: '#3B82F6',
                   selectedDayTextColor: '#ffffff',
                   todayTextColor: '#3B82F6',
-                  dayTextColor: '#FFFFFF',
-                  textDisabledColor: '#333333',
+                  dayTextColor: isDark ? '#FFFFFF' : '#0F172A',
+                  textDisabledColor: isDark ? '#333333' : '#CBD5E1',
                   dotColor: '#4CAF50',
                   selectedDotColor: '#ffffff',
                   arrowColor: '#3B82F6',
-                  monthTextColor: '#FFFFFF',
+                  monthTextColor: isDark ? '#FFFFFF' : '#0F172A',
                   textDayFontWeight: '500',
                   textMonthFontWeight: 'bold',
                   textDayHeaderFontWeight: '600'

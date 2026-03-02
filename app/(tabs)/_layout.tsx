@@ -2,20 +2,27 @@ import { Tabs } from 'expo-router';
 import { Platform, View, Text, Pressable } from 'react-native';
 import { Link, usePathname } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
+import { useColorScheme } from 'nativewind';
 
 export default function TabLayout() {
   const pathname = usePathname();
   const isWeb = Platform.OS === 'web';
-  const { role, firstName, lastName } = useAuth();
+  const { user, role, firstName, lastName } = useAuth();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   
-  const profileLabel = firstName && lastName ? `${firstName} ${lastName}` : 'Profile';
+  const profileLabel = firstName && lastName ? `${firstName} ${lastName}` : (user ? 'Profile' : 'Sign In');
 
   // Custom top nav for web
   if (isWeb) {
     return (
       <View className="flex-1 bg-finance-dark">
         <View className="flex-row items-center justify-between p-4 bg-finance-surface border-b border-finance-border">
-          <Text className="text-xl font-bold text-finance-text">Alpha IPO</Text>
+          <Link href="/" asChild>
+            <Pressable>
+              <Text className="text-xl font-bold text-finance-text">Alpha IPO</Text>
+            </Pressable>
+          </Link>
           <View className="flex-row space-x-6">
             <Link href="/" asChild>
               <Pressable>
@@ -53,14 +60,14 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: '#1E1E1E' },
-        headerTintColor: '#FFFFFF',
+        headerStyle: { backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF' },
+        headerTintColor: isDark ? '#FFFFFF' : '#1E293B',
         tabBarStyle: {
-          backgroundColor: '#1E1E1E',
-          borderTopColor: '#333333',
+          backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
+          borderTopColor: isDark ? '#333333' : '#E2E8F0',
         },
-        tabBarActiveTintColor: '#4CAF50',
-        tabBarInactiveTintColor: '#A0A0A0',
+        tabBarActiveTintColor: '#10B981', // finance-green
+        tabBarInactiveTintColor: isDark ? '#A0A0A0' : '#64748B',
       }}>
       <Tabs.Screen
         name="index"

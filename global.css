@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --finance-dark: 245 247 250;     /* #F5F7FA */
+    --finance-dark: 255 255 255;     /* #FFFFFF */
     --finance-surface: 255 255 255;  /* #FFFFFF */
     --finance-card: 249 250 252;     /* #F9FAFC */
     --finance-border: 226 232 240;   /* #E2E8F0 */

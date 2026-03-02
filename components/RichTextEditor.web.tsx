@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface RichTextEditorProps {
@@ -10,6 +11,8 @@ interface RichTextEditorProps {
 }
 
 export default function RichTextEditor({ value, onChange, placeholder = 'Write something...', minHeight = 200 }: RichTextEditorProps) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<View>(null);
   if (Platform.OS !== 'web') {
@@ -113,7 +116,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
     }
   };
 
-  const IconButton = ({ icon, onPress, color = "#F8FAFC", highlight = false }: { icon: any, onPress: () => void, color?: string, highlight?: boolean }) => (
+  const IconButton = ({ icon, onPress, color = isDark ? "#F8FAFC" : "#1E293B", highlight = false }: { icon: any, onPress: () => void, color?: string, highlight?: boolean }) => (
     <button 
       type="button"
       onMouseDown={(e: any) => {
@@ -199,9 +202,9 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
             </View>
 
             {/* Helpful Note / Hint */}
-            <View className="bg-[#131B2C] p-2 px-3 border-b border-finance-border flex-row items-center">
-              <MaterialCommunityIcons name="information-outline" size={14} color="#94A3B8" />
-              <Text className="text-[#94A3B8] text-xs ml-2 font-medium">
+            <View className={`p-2 px-3 border-b border-finance-border flex-row items-center ${isDark ? 'bg-[#131B2C]' : 'bg-[#F1F5F9]'}`}>
+              <MaterialCommunityIcons name="information-outline" size={14} color={isDark ? "#94A3B8" : "#64748B"} />
+              <Text className={`${isDark ? 'text-[#94A3B8]' : 'text-[#64748B]'} text-xs ml-2 font-medium`}>
                 Tip: Select/Highlight text first, then tap an icon above to apply formatting.
               </Text>
             </View>
@@ -222,7 +225,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
             style={{
               minHeight: focused ? `${minHeight - 80}px` : `${minHeight - 20}px`,
               outline: 'none',
-              color: '#F8FAFC',
+              color: isDark ? '#F8FAFC' : '#0F172A',
               padding: '16px',
               fontSize: '16px',
               lineHeight: '1.5',
@@ -238,21 +241,21 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1E293B', // finance-dark match
+    backgroundColor: 'rgb(var(--finance-dark))',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#2A3655', // finance-border match
+    borderColor: 'rgb(var(--finance-border))',
     overflow: 'hidden',
     width: '100%'
   },
   focused: {
-    borderColor: '#3B82F6', // finance-accent match
+    borderColor: 'rgb(var(--finance-accent))',
   },
   toolbar: {
     width: '100%',
   },
   editorWrapper: {
     width: '100%',
-    backgroundColor: '#0B0F19',
+    backgroundColor: 'rgb(var(--finance-dark))',
   }
 });
