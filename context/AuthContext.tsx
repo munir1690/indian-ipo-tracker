@@ -10,6 +10,7 @@ interface AuthContextType {
   lastName: string | null;
   theme: 'light' | 'dark';
   savedIPOs: string[];
+  status: 'active' | 'disabled';
   loading: boolean;
   updateTheme: (newTheme: 'light' | 'dark') => Promise<void>;
 }
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   lastName: null,
   theme: 'light',
   savedIPOs: [],
+  status: 'active',
   loading: true,
   updateTheme: async () => {},
 });
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [lastName, setLastName] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [savedIPOs, setSavedIPOs] = useState<string[]>([]);
+  const [status, setStatus] = useState<'active' | 'disabled'>('active');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,12 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLastName(data.lastName || null);
             setTheme(data.theme || 'light');
             setSavedIPOs(data.savedIPOs || []);
+            setStatus(data.status || 'active');
           } else {
             setRole('user'); // Default role
             setFirstName(null);
             setLastName(null);
             setTheme('light');
             setSavedIPOs([]);
+            setStatus('active');
           }
           setLoading(false);
         }, (err) => {
@@ -65,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLastName(null);
           setTheme('light');
           setSavedIPOs([]);
+          setStatus('active');
           setLoading(false);
         });
       } else {
@@ -73,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLastName(null);
         setTheme('light');
         setSavedIPOs([]);
+        setStatus('active');
         setLoading(false);
         if (unsubscribeDoc) unsubscribeDoc();
       }
@@ -95,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, firstName, lastName, theme, savedIPOs, loading, updateTheme }}>
+    <AuthContext.Provider value={{ user, role, firstName, lastName, theme, savedIPOs, status, loading, updateTheme }}>
       {children}
     </AuthContext.Provider>
   );

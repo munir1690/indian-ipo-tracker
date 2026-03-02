@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Text, Pressable, Alert, Platform, Modal } from 'react-native';
 import { MarketUpdate } from '@/types';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -17,31 +17,73 @@ export function PulsePost({ post }: PulsePostProps) {
   const { user, role } = useAuth();
   const router = useRouter();
   
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const canEdit = user?.uid === post.authorId || role === 'admin';
 
-  const handleDelete = () => {
-    Alert.alert('Delete Post', 'Are you sure you want to delete this insight?', [
-      { text: 'Cancel', style: 'cancel' },
-      { 
-        text: 'Delete', 
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteDoc(doc(db, 'pulse', post.id));
-          } catch (error) {
-            console.error('Error deleting post:', error);
-            Alert.alert('Error', 'Failed to delete the post.');
-          }
-        }
+  const performDelete = async () => {
+    try {
+      await deleteDoc(doc(db, 'pulse', post.id));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      if (Platform.OS === 'web') {
+        window.alert('Failed to delete the post.');
+      } else {
+        Alert.alert('Error', 'Failed to delete the post.');
       }
-    ]);
+    }
+  };
+
+  const handleDelete = () => {
+    if (Platform.OS === 'web') {
+      setShowDeleteModal(true);
+    } else {
+      Alert.alert('Delete Post', 'Are you sure you want to delete this insight?', [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: performDelete
+        }
+      ]);
+    }
   };
   
-  // HTML makes it hard to safely truncate via strings, so we will use a max height and hidden overflow
+
   const [showComments, setShowComments] = useState(false);
 
   return (
     <View className="bg-finance-surface rounded-2xl p-6 mb-4 border border-finance-border shadow-sm">
+      <Modal
+        visible={showDeleteModal}
+        transparent={true}
+        animationType="fade"
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-finance-surface p-6 rounded-2xl w-11/12 max-w-sm border border-finance-border">
+            <Text className="text-xl font-bold text-finance-text mb-2">Delete Post</Text>
+            <Text className="text-finance-textMuted mb-6">Are you sure you want to delete this insight? This action cannot be undone.</Text>
+            
+            <View className="flex-row justify-end space-x-3">
+              <Pressable 
+                onPress={() => setShowDeleteModal(false)}
+                className="px-4 py-2 rounded-xl active:bg-finance-dark"
+              >
+                <Text className="text-finance-text font-bold">Cancel</Text>
+              </Pressable>
+              <Pressable 
+                onPress={() => {
+                  setShowDeleteModal(false);
+                  performDelete();
+                }}
+                className="bg-red-500 px-4 py-2 rounded-xl active:opacity-80"
+              >
+                <Text className="text-white font-bold">Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <View className="flex-row justify-between items-start mb-3">
         <Text className="text-xl font-extrabold text-finance-text flex-1 pr-4 tracking-tight leading-tight">{post.title}</Text>
         <View className="flex-row items-center space-x-2">

@@ -10,14 +10,21 @@ service cloud.firestore {
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // Helper function to check if the current user is active (not disabled)
+    function isActive() {
+      return request.auth != null && 
+             (!exists(/databases/$(database)/documents/users/$(request.auth.uid)) ||
+              (!('status' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data) || 
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status != 'disabled'));
+    }
+
     // users collection: Users can read/write their own documents
     match /users/{userId} {
-      // Allow read/write if the user is an admin OR if the user is the owner
-      // CRITICAL: Prevent researchers from changing their own role
       allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
       allow create: if request.auth != null && request.auth.uid == userId && 
                     (!request.resource.data.keys().hasAll(['role']) || request.resource.data.role == 'user');
-      allow update: if request.auth != null && (isAdmin() || (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])));
+      allow update: if request.auth != null && (isAdmin() || (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status'])));
+      allow delete: if isAdmin();
     }
 
     // ipos collection: Anyone can read, only admins can write
@@ -29,15 +36,15 @@ service cloud.firestore {
     // pulse collection: Anyone can read, only admins or authors can write/delete
     match /pulse/{pulseId} {
       allow read: if true;
-      allow create: if isAdmin(); // Only admins can start a pulse post for now, or you can allow experts later
-      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.authorId);
+      allow create: if isAdmin() && isActive();
+      allow update, delete: if (isAdmin() || (request.auth != null && request.auth.uid == resource.data.authorId)) && isActive();
     }
 
     // comments collection: Anyone can read, authenticated users can write, only authors or admins can delete
     match /comments/{commentId} {
       allow read: if true;
-      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
-      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.authorId);
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid && isActive();
+      allow update, delete: if (isAdmin() || (request.auth != null && request.auth.uid == resource.data.authorId)) && isActive();
     }
   }
 }

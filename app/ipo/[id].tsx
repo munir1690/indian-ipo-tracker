@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking, Alert, Image, Dimensions } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { BarChart } from 'react-native-chart-kit';
+import { Ionicons } from '@expo/vector-icons';
 import { useIPODetail } from '@/hooks/useFirestore';
 import { useAuth } from '@/context/AuthContext';
 import RichTextRenderer from '@/components/RichTextRenderer';
@@ -17,6 +19,65 @@ export default function IPODetailScreen() {
   const screenWidth = Dimensions.get('window').width;
   
   const isSaved = savedIPOs.includes(ipoId);
+
+  const [expandedSections, setExpandedSections] = useState({
+    about: false,
+    strengths: false,
+    expert: false,
+    discussion: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const allExpanded = Object.values(expandedSections).every(Boolean);
+  const toggleAll = () => {
+    const newState = !allExpanded;
+    setExpandedSections({
+      about: newState,
+      strengths: newState,
+      expert: newState,
+      discussion: newState
+    });
+  };
+
+  const ExpandableContent = ({ 
+    children, 
+    isExpanded, 
+    onToggle, 
+    initialHeight = 150 
+  }: { 
+    children: React.ReactNode, 
+    isExpanded: boolean, 
+    onToggle: () => void, 
+    initialHeight?: number 
+  }) => {
+    const [contentHeight, setContentHeight] = useState(0);
+    const needsExpansion = contentHeight > (initialHeight + 5);
+
+    return (
+      <View className="w-full">
+        <View style={{ maxHeight: isExpanded ? undefined : initialHeight, overflow: 'hidden', width: '100%' }}>
+          <View onLayout={(e) => setContentHeight(e.nativeEvent.layout.height)} style={{ width: '100%' }}>
+            {children}
+          </View>
+        </View>
+        
+        {needsExpansion && (
+          <Pressable 
+            onPress={onToggle} 
+            className="mt-3 pt-3 border-t border-finance-border/30 flex-row justify-center items-center active:opacity-70 w-full"
+          >
+            <Text className="text-finance-accent font-bold mr-1">
+              {isExpanded ? 'Show Less' : 'Read More'}
+            </Text>
+            <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={16} color="#3B82F6" />
+          </Pressable>
+        )}
+      </View>
+    );
+  };
 
   const toggleSave = async () => {
     if (!user) {
@@ -245,40 +306,73 @@ export default function IPODetailScreen() {
           )}
         </View>
 
+        {/* Expand/Collapse All Toggle */}
+        {(listing.extendedDetails?.aboutCompany || 
+          listing.extendedDetails?.pros?.length || 
+          listing.extendedDetails?.cons?.length || 
+          listing.expertTake) ? (
+          <View className="flex-row justify-end mb-4">
+            <Pressable onPress={toggleAll} className="flex-row items-center active:opacity-70 bg-finance-surface px-4 py-2 rounded-full border border-finance-border">
+              <Ionicons name={allExpanded ? "contract" : "expand"} size={16} color="#3B82F6" />
+              <Text className="text-finance-accent font-bold text-sm ml-2">
+                {allExpanded ? "Collapse All" : "Expand All"}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
+
         {/* About Company */}
         {listing.extendedDetails?.aboutCompany && (
-           <View className="mb-8 pl-2 border-l-2 border-finance-accent/50">
-             <Text className="text-finance-text font-bold text-lg mb-2">About {listing.companyName}</Text>
-             <RichTextRenderer 
-               content={typeof listing.extendedDetails.aboutCompany === 'string' 
-                 ? listing.extendedDetails.aboutCompany 
-                 : (listing.extendedDetails.aboutCompany as any)?.aboutCompany || JSON.stringify(listing.extendedDetails.aboutCompany)}
-             />
+           <View className="mb-4 bg-finance-surface rounded-2xl p-4 border border-finance-border shadow-sm">
+             <Text className="text-xl font-extrabold text-finance-text tracking-tight mb-2">About {listing.companyName}</Text>
+             <ExpandableContent isExpanded={expandedSections.about} onToggle={() => toggleSection('about')}>
+               <View className="pt-2">
+                 <RichTextRenderer 
+                   content={typeof listing.extendedDetails.aboutCompany === 'string' 
+                     ? listing.extendedDetails.aboutCompany 
+                     : (listing.extendedDetails.aboutCompany as any)?.aboutCompany || JSON.stringify(listing.extendedDetails.aboutCompany)}
+                 />
+               </View>
+             </ExpandableContent>
            </View>
         )}
 
         {/* Strengths & Risks */}
         {(listing.extendedDetails?.pros?.length || listing.extendedDetails?.cons?.length) && (
-            <View className="mb-8 flex-col space-y-6">
-                {listSection("🏭 Competitive Strengths", listing.extendedDetails.pros || [], "text-finance-green")}
-                {listSection("⚠️ Risk Factors", listing.extendedDetails.cons || [], "text-finance-red")}
+            <View className="mb-4 bg-finance-surface rounded-2xl p-4 border border-finance-border shadow-sm">
+              <Text className="text-xl font-extrabold text-finance-text tracking-tight mb-2">Strengths & Risks</Text>
+              <ExpandableContent isExpanded={expandedSections.strengths} onToggle={() => toggleSection('strengths')}>
+                <View className="flex-col space-y-6 pt-2">
+                    {listSection("🏭 Competitive Strengths", listing.extendedDetails.pros || [], "text-finance-green")}
+                    {listSection("⚠️ Risk Factors", listing.extendedDetails.cons || [], "text-finance-red")}
+                </View>
+              </ExpandableContent>
             </View>
         )}
 
         {/* Expert Take */}
-        <View className="rounded-2xl p-6 border border-finance-border bg-finance-surface shadow-sm relative overflow-hidden">
-          <View className="absolute top-0 right-0 h-1 w-full bg-finance-accent opacity-20" />
-          <View className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-xl border-l border-b border-finance-border ${tagColor}`}>
-             <Text className={`text-xs font-extrabold uppercase tracking-widest ${tagColor.split(' ')[0]}`}>{listing.expertTake.tag}</Text>
+        {listing.expertTake?.remarks && listing.expertTake.remarks.trim().length > 0 && (
+          <View className="mb-4 bg-finance-surface rounded-2xl p-4 border border-finance-border shadow-sm relative overflow-hidden">
+            <View className="absolute top-0 right-0 h-1 w-full bg-finance-accent opacity-20" />
+            <View className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-xl border-l border-b border-finance-border ${tagColor} z-10`}>
+               <Text className={`text-xs font-extrabold uppercase tracking-widest ${tagColor.split(' ')[0]}`}>{listing.expertTake.tag}</Text>
+            </View>
+            <Text className="text-xl font-extrabold text-finance-text tracking-tight mt-2 mb-2">Alpha Expert Take</Text>
+            <ExpandableContent isExpanded={expandedSections.expert} onToggle={() => toggleSection('expert')}>
+              <View className="pt-2">
+                <RichTextRenderer content={listing.expertTake.remarks} />
+              </View>
+            </ExpandableContent>
           </View>
-          <Text className="text-2xl font-extrabold text-finance-text mb-4 mt-2 tracking-tight">
-             Alpha Expert Take
-          </Text>
-          <RichTextRenderer content={listing.expertTake.remarks} />
-        </View>
+        )}
 
         {/* Discussion */}
-        <Comments targetId={ipoId} targetType="ipo" />
+        <View className="mb-8 bg-finance-surface rounded-2xl p-4 border border-finance-border shadow-sm">
+          <Text className="text-xl font-extrabold text-finance-text tracking-tight mb-2">Discussion</Text>
+          <ExpandableContent isExpanded={expandedSections.discussion} onToggle={() => toggleSection('discussion')} initialHeight={250}>
+            <Comments targetId={ipoId} targetType="ipo" hideTitle />
+          </ExpandableContent>
+        </View>
       </View>
     </ScrollView>
     </>
