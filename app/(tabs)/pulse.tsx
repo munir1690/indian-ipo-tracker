@@ -12,10 +12,9 @@ export default function PulseScreen() {
   return (
     <View className="flex-1 bg-finance-dark">
       <View className="p-5 flex-1 max-w-3xl w-full mx-auto">
-        <View className="mb-6 mt-6 flex-row justify-between items-center">
+        <View className="mb-4 mt-2 flex-row justify-between items-center">
           <View>
-            <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">Market Pulse</Text>
-            <Text className="text-finance-textMuted font-medium">Alpha expert updates and macro insights</Text>
+            <Text className="text-2xl font-extrabold text-finance-text tracking-tight mb-1">Market Pulse</Text>
           </View>
           {role === 'admin' && (
             <Pressable 

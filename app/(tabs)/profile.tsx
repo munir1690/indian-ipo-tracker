@@ -92,9 +92,8 @@ export default function ProfileScreen() {
   return (
     <View className="flex-1 bg-finance-dark">
       <View className="p-5 flex-1 max-w-3xl w-full mx-auto">
-        <View className="mb-8 mt-6">
-          <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">Profile</Text>
-          <Text className="text-finance-textMuted font-medium">Manage your account and settings</Text>
+        <View className="mb-6 mt-2">
+          <Text className="text-2xl font-extrabold text-finance-text tracking-tight mb-1">Account & Settings</Text>
         </View>
 
         <View className="bg-finance-surface rounded-2xl p-6 mb-6 border border-finance-border shadow-sm flex-row items-center justify-between">

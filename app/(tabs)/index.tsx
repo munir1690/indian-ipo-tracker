@@ -47,10 +47,9 @@ export default function PipelineScreen() {
   return (
     <View className="flex-1 bg-finance-dark">
       <View className="p-5 flex-1 max-w-3xl w-full mx-auto">
-        <View className="mb-6 mt-6 flex-row justify-between items-start">
+        <View className="mb-4 mt-2 flex-row justify-between items-center">
           <View className="flex-1 mr-4">
-            <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">IPOs</Text>
-            <Text className="text-finance-textMuted font-medium">Track and analyze upcoming offerings</Text>
+            <Text className="text-2xl font-extrabold text-finance-text tracking-tight mb-1">Upcoming Market</Text>
           </View>
           {role === 'admin' && (
             <Pressable 
