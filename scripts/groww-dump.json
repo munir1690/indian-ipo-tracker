@@ -1,0 +1,191 @@
+{
+  "ipoData": {
+    "categories": [
+      {
+        "category": "IND_SME",
+        "categoryLabel": "Individual investor",
+        "categorySubText": "Apply from ₹2,00,000 onwards.",
+        "lotSize": 1600,
+        "minBidQuantity": 3200,
+        "minPrice": 71,
+        "maxPrice": 72,
+        "subscriptionRate": null,
+        "state": "ACTIVE",
+        "categoryDiscount": 0,
+        "isCategoryActive": true,
+        "cutOffTime": "2026-03-02T15:50:00",
+        "categoryDetails": {
+          "categoryLabel": "Apply as Individual investor",
+          "categoryInfo": [
+            "Price is: Rs. 71.0 - 72.0. Apply from ₹2,00,000 onwards."
+          ]
+        }
+      }
+    ],
+    "symbol": "STRIDERS",
+    "bannerText": "Bidding open now - 26 February to 02 March",
+    "aboutCompany": {
+      "yearFounded": "2021",
+      "managingDirector": "Mr Mustafa Esmail Kapasi and Mr Kumarshri Rajkumar Bahety",
+      "aboutCompany": "Striders Impex Limited is engaged in the business of licensing, own brand development, and distribution of toys and kids’ consumer merchandise. The company provides end-to-end solutions covering product design and development, sourcing, manufacturing through third parties, and distribution across retail formats in India and select international markets. It develops and distributes licensed merchandise and also owns proprietary intellectual properties (IPs), including Pugs at Play, Furry Pals, Gurliez, Fanster, Beezy Kits, Minds at Play, SHDZ, Boujees, and Striders. Its products cater to children between 18 months and 15 years of age. \nIn addition to its operations in India, Striders Impex has a presence in the Middle East through its wholly owned subsidiary, Striders FZ LLC, and operates through a network of distributors supporting its international distribution activities."
+    },
+    "companyName": "Striders Impex Ltd",
+    "companyShortName": "Stridex Impex",
+    "isSme": true,
+    "pros": [
+      "Striders Impex claims to operate an asset-light, licensing-led, and distribution-focused model. By relying on third-party manufacturers instead of owning production facilities, the company states that it reduces fixed overheads and maintains operational flexibility. This structure is presented as enabling faster scalability and efficient capital deployment.",
+      "The company claims to have established partnerships with internationally recognised licensors. These arrangements allow it to develop and distribute character-based and brand-affiliated products without undertaking in-house content creation. It states that adherence to licensing terms and brand protocols supports its position as a compliant distribution partner.",
+      "Striders Impex has set up wholly owned subsidiaries, including Striders FZ LLC and Striders Hub General Trading LLC, to expand outside India. The company claims that this international presence supports revenue diversification and broader market access.",
+      "The company claims to have built a distribution network spanning modern trade, general trade, and e-commerce platforms. This structure is intended to reduce dependence on a single sales channel and widen consumer reach.",
+      "Striders Impex reported retail revenue of approximately Rs 41.23 crore through partnerships with modern trade chains and institutional buyers. The company claims that these relationships support its presence in categories such as back-to-school products, bags, and plush items.",
+      "The company claims to maintain sourcing networks in both India and China. This dual-country model is presented as providing flexibility in production planning and reducing dependence on a single geography for key brands such as Pugs at Play and Furry Pals.",
+      "The company has reported a consistent increase in its revenue from operations and profit after tax (PAT). Revenue from operations increased from Rs 29.96 crore (standalone) in FY23 to Rs 41.70 crore (standalone) in FY24 and Rs 61.86 crore (consolidated) in FY25. PAT increased from Rs 2.03 crore (standalone) in FY23 to Rs 4.38 crore (standalone) in FY24 and Rs 8.41 crore (consolidated) in FY25."
+    ],
+    "cons": [
+      "The company is dependent on purchase order-based procurement arrangements with China-based manufacturers, without entering into long-term or framework supply agreements. Procurement from China accounted for Rs 16.20 crore (56.13 percent) of total costs incurred for procurement for the period ended December 31, 2025; Rs 24.53 crore (60.58 percent) in FY25; Rs 18.06 crore (64.57 percent) in FY24; and Rs 16.39 crore (66.74 percent) in FY23. Any material disruption, dispute, delay, or default in respect of procurements from China-based manufacturers could adversely affect the company’s business operations, revenues, cash flows, working capital requirements, profitability, and overall financial condition.",
+      "The top customer accounted for Rs 12.62 crore (25.45 percent) (consolidated) of the company’s total sales for the period ended December 31, 2025; Rs 22.41 crore (36.22 percent) (consolidated) in FY25; Rs 10.65 crore (25.55 percent) (standalone) in FY24; and Rs 12.18 crore (40.65 percent) (standalone) in FY23. Any significant reduction in business from this client could have an adverse effect on the company’s revenue, profitability, financial condition, and cash flows.",
+      "The top supplier accounted for Rs 7.18 crore (19.72 percent) (consolidated) of the company’s total purchases for the period ended December 31, 2025; Rs 9.44 crore (22.91 percent) (consolidated) in FY25; Rs 9.80 crore (35.05 percent) (standalone) in FY24; and Rs 8.22 crore (33.49 percent) (standalone) in FY23. Any disruption in supplies from this key supplier could have an adverse effect on the company’s business operations and financial condition.",
+      "The company, its promoters, directors, KMPs, and SMPs are involved in certain ongoing legal proceedings. The company’s business prospects could be hit in case of adverse judgments in any of these cases.",
+      "The company operates under multiple licensing arrangements that require payment of royalties, minimum guarantees, and other contractual fees to global brand licensors. These royalty rates and fee structures may be revised periodically and can vary based on sales performance, currency movements, or changes in licensor policies. Any increase in royalty rates, higher minimum guarantee obligations, or restrictive licensing terms may have a material adverse effect on the company’s profit margins, cash flows, and overall financial condition.",
+      "The company operates in the kids’ merchandising and toy segment, which is subject to seasonal fluctuations in demand. Sales typically peak during festival periods, holidays, and back-to-school seasons, with regional variations driven by differing academic calendars across India. Inability to accurately forecast demand or manage inventory during peak and non-peak periods may have a material adverse effect on the company’s revenues, working capital, cash flows, and overall financial condition.",
+      "The company reported negative cash flow from operating activities amounting to Rs 6.42 crore for the period ended December 31, 2025; Rs 7.82 crore in FY24; and Rs 2.81 crore in FY23. This was primarily due to increased working capital requirements during its growth phase. Additionally, negative cash flow from investing activities amounted to Rs 9.21 crore in FY25, Rs 1.21 crore in FY24, and Rs 0.39 crore in FY23.  Sustained negative operating cash flows could adversely affect the company’s business, financial condition, and results of operations.",
+      "As of December 31, 2025, the company had outstanding financial indebtedness of Rs 22.92 crore. Failure to service or repay these loans could harm the company’s operations and financial position."
+    ],
+    "lotSize": 1600,
+    "minPrice": 71,
+    "maxPrice": 72,
+    "startDate": "2026-02-26",
+    "endDate": "2026-03-02",
+    "minBidQty": 3200,
+    "issueSize": 362900000,
+    "listing": {
+      "listingPrice": null,
+      "listedOn": [],
+      "bseScripCode": null,
+      "nseScripCode": null
+    },
+    "issuePrice": 72,
+    "parentSearchId": null,
+    "subscriptionUpdatedAt": "2026-02-27T18:31:35",
+    "documentUrl": "https://cdn.sanity.io/files/j3przt28/production/aedf9b6ac2fe4ce933853ce333d51d625d3e9899.pdf",
+    "logoUrl": "https://assets-netstorage.groww.in/stocks-ipo/logos/STRIDERSIMPEXLIMITED_17901081_95991.png",
+    "videoId": "",
+    "videoName": null,
+    "subscriptionRates": [
+      {
+        "category": "QIB",
+        "categoryName": "Qualified Institutional Buyers",
+        "subscriptionRate": 2.03480589022758
+      },
+      {
+        "category": "NII",
+        "categoryName": "Non-Institutional Investor",
+        "subscriptionRate": 0.773026315789474
+      },
+      {
+        "category": "RETAIL",
+        "categoryName": "Retail Individual Investor",
+        "subscriptionRate": 0.431297709923664
+      },
+      {
+        "category": "TOTAL",
+        "categoryName": "Total",
+        "subscriptionRate": 0.948535936113576
+      }
+    ],
+    "financials": [
+      {
+        "title": "Revenue",
+        "yearly": {
+          "2023": 29.96,
+          "2024": 41.7,
+          "2025": 61.86
+        },
+        "quarterly": {}
+      },
+      {
+        "title": "Total Assets",
+        "yearly": {
+          "2023": 17,
+          "2024": 29.45,
+          "2025": 48.7
+        },
+        "quarterly": {}
+      },
+      {
+        "title": "Profit",
+        "yearly": {
+          "2023": 2.03,
+          "2024": 4.38,
+          "2025": 8.41
+        },
+        "quarterly": {}
+      }
+    ],
+    "sector": "Trading",
+    "faqs": [
+      {
+        "question": "What is the issue size of Striders Impex Ltd IPO?",
+        "answer": "The issue size of the Striders Impex Ltd IPO is 36.29 Cr."
+      },
+      {
+        "question": "What is 'pre-apply' for Striders Impex Ltd IPO?",
+        "answer": "Pre-apply will allow you to apply for the Striders Impex Ltd IPO 2 days before the subscription period starts."
+      },
+      {
+        "question": "If I pre-apply for Striders Impex Ltd IPO, when will my order get placed?",
+        "answer": "Your order will be placed on the exchange as soon as the Striders Impex Ltd IPO bidding starts. You will receive a UPI request within 24 hours after the bidding period opens."
+      },
+      {
+        "question": "When will I know if my Striders Impex Ltd IPO order is placed?",
+        "answer": "We will notify you when your Striders Impex Ltd IPO order is placed with the exchange."
+      },
+      {
+        "question": "What are the open and close dates of the Striders Impex Ltd IPO?",
+        "answer": "Striders Impex Ltd IPO will be open between 26 Feb '26 and 02 Mar '26."
+      },
+      {
+        "question": "What is the lot size and minimum order quantity of the Striders Impex Ltd IPO?",
+        "answer": "Striders Impex Ltd IPO lot size is 1600 and minimum order quantity is 3200."
+      },
+      {
+        "question": "What is the allotment date for the Striders Impex Ltd IPO?",
+        "answer": "Striders Impex Ltd IPO allotment date is 04 Mar '26. For Striders Impex Ltd IPO allotment status check, you can visit the website of the registrar of the IPO."
+      },
+      {
+        "question": "Who is the registrar of Striders Impex Ltd IPO?",
+        "answer": "For Striders Impex Ltd, the IPO registrar is LINK. You can check Striders Impex Ltd IPO allotment status on the website of the registrar."
+      },
+      {
+        "question": "Where is the Striders Impex Ltd IPO getting listed?",
+        "answer": "The shares are proposed to be listed on the NSE - SME."
+      }
+    ],
+    "allotmentDate": "2026-03-04T00:00:00",
+    "listingDate": "2026-03-06T00:00:00",
+    "faceValue": 10,
+    "tickSize": 1,
+    "cutOffPrice": null,
+    "isin": "INE1XWN01017",
+    "registrar": "LINK",
+    "t1ModStartDate": null,
+    "t1ModEndDate": null,
+    "t1ModStartTime": null,
+    "t1ModEndTime": null,
+    "issueType": "EQUITY",
+    "status": "ACTIVE",
+    "dailyStartTime": "10:00:00",
+    "dailyEndTime": "17:00:00",
+    "lastBidPlaceTime": "15:50:00",
+    "applicationDetails": "For Stridex Impex IPO, eligible investors can apply as Individual investor.",
+    "peerList": null,
+    "ppContent": null,
+    "rtaLink": "https://in.mpms.mufg.com/Initial_Offer/public-issues.html",
+    "isAllotmentAnnounced": false,
+    "additionalInfo": null,
+    "preApplyOpen": false,
+    "minBidQuantity": 3200,
+    "growwShortName": "Stridex Impex"
+  },
+  "ipoStrapiContent": ""
+}

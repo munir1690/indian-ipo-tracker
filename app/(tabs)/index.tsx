@@ -1,98 +1,129 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { View, FlatList, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import { SegmentedControl } from '@/components/SegmentedControl';
+import { IPOListCard } from '@/components/IPOListCard';
+import { Calendar } from 'react-native-calendars';
+import { format } from 'date-fns';
+import { useIPOs } from '@/hooks/useFirestore';
+import { seedFirestore } from '@/seed';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function PipelineScreen() {
+  const [filter, setFilter] = useState('Upcoming');
+  const [viewMode, setViewMode] = useState<'List' | 'Calendar'>('List');
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const { ipos, loading } = useIPOs();
 
-export default function HomeScreen() {
+  const filteredIPOs = ipos.filter((ipo) => ipo.status === filter);
+
+  // Generate marked dates for the calendar
+  const markedDates: any = {};
+  filteredIPOs.forEach((ipo) => {
+    const dateStr = format(new Date(ipo.expectedListingDate), 'yyyy-MM-dd');
+    markedDates[dateStr] = {
+      marked: true,
+      dotColor: '#4CAF50', // finance-green
+    };
+  });
+
+  if (selectedDate) {
+    markedDates[selectedDate] = {
+      ...markedDates[selectedDate],
+      selected: true,
+      selectedColor: '#3B82F6', // finance-accent
+    };
+  }
+
+  const iposForSelectedDate = selectedDate
+    ? filteredIPOs.filter((ipo) => format(new Date(ipo.expectedListingDate), 'yyyy-MM-dd') === selectedDate)
+    : [];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View className="flex-1 bg-finance-dark">
+      <View className="p-5 flex-1 max-w-3xl w-full mx-auto">
+        <View className="mb-6 mt-6 flex-row justify-between items-end">
+          <View>
+            <Text className="text-4xl font-extrabold text-finance-text tracking-tight mb-2">IPO Pipeline</Text>
+            <Text className="text-finance-textMuted font-medium">Track and analyze upcoming offerings</Text>
+          </View>
+          <View className="flex-row bg-finance-surface rounded-lg p-1 border border-finance-border">
+            <Pressable onPress={() => setViewMode('List')} className={`px-3 py-1.5 rounded-md ${viewMode === 'List' ? 'bg-finance-card' : ''}`}>
+              <Text className={`text-sm font-semibold ${viewMode === 'List' ? 'text-finance-text' : 'text-finance-textMuted'}`}>List</Text>
+            </Pressable>
+            <Pressable onPress={() => setViewMode('Calendar')} className={`px-3 py-1.5 rounded-md ${viewMode === 'Calendar' ? 'bg-finance-card' : ''}`}>
+              <Text className={`text-sm font-semibold ${viewMode === 'Calendar' ? 'text-finance-text' : 'text-finance-textMuted'}`}>Calendar</Text>
+            </Pressable>
+          </View>
+        </View>
+        
+        <SegmentedControl 
+          options={['Upcoming', 'Active', 'Listed']} 
+          selectedOption={filter} 
+          onOptionPress={setFilter} 
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {loading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#3B82F6" />
+          </View>
+        ) : viewMode === 'List' ? (
+          <FlatList
+            data={filteredIPOs}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <IPOListCard listing={item} />}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40, paddingTop: 10 }}
+            ListEmptyComponent={
+              <View className="items-center justify-center mt-20">
+                <Text className="text-finance-textMuted text-lg font-medium mb-4">No IPOs found in this category.</Text>
+                <Pressable onPress={() => seedFirestore()} className="bg-finance-surface border border-finance-border px-4 py-2 rounded-lg active:opacity-70">
+                  <Text className="text-finance-accent font-bold">Seed Initial Data</Text>
+                </Pressable>
+              </View>
+            }
+          />
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40, paddingTop: 10 }}>
+            <View className="rounded-2xl overflow-hidden border border-finance-border mb-6">
+              <Calendar
+                theme={{
+                  backgroundColor: '#1E1E1E',
+                  calendarBackground: '#1E1E1E',
+                  textSectionTitleColor: '#A0A0A0',
+                  selectedDayBackgroundColor: '#3B82F6',
+                  selectedDayTextColor: '#ffffff',
+                  todayTextColor: '#3B82F6',
+                  dayTextColor: '#FFFFFF',
+                  textDisabledColor: '#333333',
+                  dotColor: '#4CAF50',
+                  selectedDotColor: '#ffffff',
+                  arrowColor: '#3B82F6',
+                  monthTextColor: '#FFFFFF',
+                  textDayFontWeight: '500',
+                  textMonthFontWeight: 'bold',
+                  textDayHeaderFontWeight: '600'
+                }}
+                markedDates={markedDates}
+                onDayPress={(day: any) => setSelectedDate(day.dateString)}
+              />
+            </View>
+            
+            {selectedDate && (
+              <View>
+                <Text className="text-xl font-extrabold text-finance-text tracking-tight mb-4">
+                  IPOs on {format(new Date(selectedDate), 'MMM d, yyyy')}
+                </Text>
+                {iposForSelectedDate.length > 0 ? (
+                  iposForSelectedDate.map(ipo => <IPOListCard key={ipo.id} listing={ipo} />)
+                ) : (
+                  <View className="p-4 bg-finance-surface rounded-xl border border-finance-border">
+                    <Text className="text-finance-textMuted font-medium text-center">No IPOs scheduled for this date.</Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </ScrollView>
+        )}
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

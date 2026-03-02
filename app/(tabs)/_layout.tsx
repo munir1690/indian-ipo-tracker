@@ -1,33 +1,73 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Platform, View, Text, Pressable } from 'react-native';
+import { Link, usePathname } from 'expo-router';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const pathname = usePathname();
+  const isWeb = Platform.OS === 'web';
 
+  // Custom top nav for web
+  if (isWeb) {
+    return (
+      <View className="flex-1 bg-finance-dark">
+        <View className="flex-row items-center justify-between p-4 bg-finance-surface border-b border-finance-border">
+          <Text className="text-xl font-bold text-finance-text">Alpha IPO</Text>
+          <View className="flex-row space-x-6">
+            <Link href="/" asChild>
+              <Pressable>
+                <Text className={`text-base ${pathname === '/' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Pipeline</Text>
+              </Pressable>
+            </Link>
+            <Link href="/pulse" asChild>
+              <Pressable>
+                <Text className={`text-base ${pathname === '/pulse' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Pulse</Text>
+              </Pressable>
+            </Link>
+            <Link href="/saved" asChild>
+              <Pressable>
+                <Text className={`text-base ${pathname === '/saved' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Saved</Text>
+              </Pressable>
+            </Link>
+          </View>
+        </View>
+        <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="pulse" />
+          <Tabs.Screen name="saved" />
+        </Tabs>
+      </View>
+    );
+  }
+
+  // Bottom tabs for mobile
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
+        headerStyle: { backgroundColor: '#1E1E1E' },
+        headerTintColor: '#FFFFFF',
+        tabBarStyle: {
+          backgroundColor: '#1E1E1E',
+          borderTopColor: '#333333',
+        },
+        tabBarActiveTintColor: '#4CAF50',
+        tabBarInactiveTintColor: '#A0A0A0',
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Pipeline',
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="pulse"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Pulse',
+        }}
+      />
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: 'Saved',
         }}
       />
     </Tabs>
