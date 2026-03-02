@@ -19,7 +19,7 @@ export default function TabLayout() {
           <View className="flex-row space-x-6">
             <Link href="/" asChild>
               <Pressable>
-                <Text className={`text-base ${pathname === '/' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>Pipeline</Text>
+                <Text className={`text-base ${pathname === '/' ? 'text-finance-green font-bold' : 'text-finance-textMuted'}`}>IPO</Text>
               </Pressable>
             </Link>
             <Link href="/pulse" asChild>
@@ -65,7 +65,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Pipeline',
+          title: 'IPO',
         }}
       />
       <Tabs.Screen

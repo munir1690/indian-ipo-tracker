@@ -1,7 +1,8 @@
 import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useIPODetail } from '@/hooks/useFirestore';
 import { useAuth } from '@/context/AuthContext';
+import RichTextRenderer from '@/components/RichTextRenderer';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/firebase';
 
@@ -94,7 +95,9 @@ export default function IPODetailScreen() {
     : 'text-finance-accent bg-blue-500/10 border-finance-accent/50';
 
   return (
-    <ScrollView className="flex-1 bg-finance-dark">
+    <>
+      <Stack.Screen options={{ title: listing.companyName ? `${listing.companyName} IPO` : 'IPO Details' }} />
+      <ScrollView className="flex-1 bg-finance-dark">
       <View className="max-w-3xl w-full mx-auto p-5 pb-10">
         <View className="flex-row justify-between items-center mb-6">
           <Pressable onPress={() => router.back()} className="active:opacity-70">
@@ -189,11 +192,11 @@ export default function IPODetailScreen() {
         {listing.extendedDetails?.aboutCompany && (
            <View className="mb-8 pl-2 border-l-2 border-finance-accent/50">
              <Text className="text-finance-text font-bold text-lg mb-2">About {listing.companyName}</Text>
-             <Text className="text-finance-textMuted leading-relaxed text-[15px]">
-               {typeof listing.extendedDetails.aboutCompany === 'string' 
+             <RichTextRenderer 
+               content={typeof listing.extendedDetails.aboutCompany === 'string' 
                  ? listing.extendedDetails.aboutCompany 
                  : (listing.extendedDetails.aboutCompany as any)?.aboutCompany || JSON.stringify(listing.extendedDetails.aboutCompany)}
-             </Text>
+             />
            </View>
         )}
 
@@ -220,5 +223,6 @@ export default function IPODetailScreen() {
         </View>
       </View>
     </ScrollView>
+    </>
   );
 }

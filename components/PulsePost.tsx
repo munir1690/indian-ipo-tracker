@@ -2,6 +2,7 @@ import { View, Text, Pressable } from 'react-native';
 import { MarketUpdate } from '@/types';
 import { Link } from 'expo-router';
 import { useState } from 'react';
+import RichTextRenderer from '@/components/RichTextRenderer';
 
 interface PulsePostProps {
   post: MarketUpdate;
@@ -10,11 +11,7 @@ interface PulsePostProps {
 export function PulsePost({ post }: PulsePostProps) {
   const [expanded, setExpanded] = useState(false);
   
-  // Truncate logic
-  const isLongText = post.content.length > 150;
-  const displayText = !expanded && isLongText 
-    ? post.content.substring(0, 150) + '...'
-    : post.content;
+  // HTML makes it hard to safely truncate via strings, so we will use a max height and hidden overflow
 
   return (
     <View className="bg-finance-surface rounded-2xl p-6 mb-4 border border-finance-border shadow-sm">
@@ -27,14 +24,15 @@ export function PulsePost({ post }: PulsePostProps) {
         </View>
       </View>
       
-      <Text className="text-finance-textMuted text-[15px] leading-relaxed font-medium">
-        {displayText}
-      </Text>
+      <View style={{ maxHeight: expanded ? undefined : 120, overflow: 'hidden' }}>
+        <RichTextRenderer content={post.content} />
+      </View>
       
-      {isLongText && (
+      {/* We'll always show the expand toggle if content is reasonably long (rough guess by character count) */}
+      {post.content.length > 200 && (
         <Pressable onPress={() => setExpanded(!expanded)} className="mt-2 py-2 active:opacity-70 self-start">
           <Text className="text-finance-accent font-bold text-sm">
-            {expanded ? 'Show less' : 'Read full text'}
+            {expanded ? 'Show less' : 'Read more'}
           </Text>
         </Pressable>
       )}

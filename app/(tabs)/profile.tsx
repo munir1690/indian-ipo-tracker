@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Pressable, ActivityIndicator, Alert, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase';
+import RichTextEditor from '@/components/RichTextEditor';
 import { useColorScheme } from 'nativewind';
 
 export default function ProfileScreen() {
@@ -15,7 +16,27 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [editFirstName, setEditFirstName] = useState(firstName || '');
   const [editLastName, setEditLastName] = useState(lastName || '');
+  const [bio, setBio] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // Fetch bio when user is loaded
+
+  useEffect(() => {
+    if (user) {
+      const fetchBio = async () => {
+        try {
+          const docRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists() && docSnap.data().bio) {
+            setBio(docSnap.data().bio);
+          }
+        } catch (error) {
+          console.error("Error fetching bio:", error);
+        }
+      };
+      fetchBio();
+    }
+  }, [user]);
 
   const handleSignOut = async () => {
     try {
@@ -32,7 +53,8 @@ export default function ProfileScreen() {
       const docRef = doc(db, 'users', user.uid);
       await setDoc(docRef, {
         firstName: editFirstName,
-        lastName: editLastName
+        lastName: editLastName,
+        bio: bio
       }, { merge: true });
       setIsEditing(false);
       Alert.alert('Success', 'Profile updated successfully.');
@@ -125,6 +147,15 @@ export default function ProfileScreen() {
                   className="bg-finance-dark text-finance-text p-3 rounded-xl border border-finance-border focus:border-finance-accent"
                   placeholder="Last Name"
                   placeholderTextColor="#666"
+                />
+              </View>
+              <View className="mt-4">
+                <Text className="text-finance-textMuted text-xs font-bold uppercase mb-2">Bio</Text>
+                <RichTextEditor 
+                  value={bio}
+                  onChange={setBio}
+                  placeholder="Tell us about your investment journey, strategy, and background..."
+                  minHeight={250}
                 />
               </View>
             </View>

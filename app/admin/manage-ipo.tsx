@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { doc, getDoc, collection, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { IPOListing } from '@/types';
+import RichTextEditor from '@/components/RichTextEditor';
 
 export default function ManageIPOScreen() {
   const { id } = useLocalSearchParams();
@@ -57,7 +58,20 @@ export default function ManageIPOScreen() {
             setExpertTag(data.expertTake?.tag || 'Neutral');
             setExpertRemarks(data.expertTake?.remarks || '');
 
-            setAboutCompany(data.extendedDetails?.aboutCompany || '');
+            // Handle potential Quill Delta object from older data
+            const aboutData = data.extendedDetails?.aboutCompany;
+            let finalAbout = '';
+            if (typeof aboutData === 'string') {
+              finalAbout = aboutData;
+            } else if (typeof aboutData === 'object' && aboutData !== null) {
+              if (Array.isArray((aboutData as any).ops)) {
+                finalAbout = (aboutData as any).ops.map((op: any) => op.insert).join('');
+              } else {
+                finalAbout = JSON.stringify(aboutData);
+              }
+            }
+            setAboutCompany(finalAbout);
+
             setPros(data.extendedDetails?.pros?.join('\n') || '');
             setCons(data.extendedDetails?.cons?.join('\n') || '');
             
@@ -162,7 +176,9 @@ export default function ManageIPOScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-finance-dark p-5">
+    <>
+      <Stack.Screen options={{ title: isEditing ? 'Edit IPO' : 'Add IPO' }} />
+      <ScrollView className="flex-1 bg-finance-dark p-5">
       <View className="max-w-2xl w-full mx-auto pb-20 mt-4">
         <Pressable onPress={() => router.back()} className="mb-6 self-start active:opacity-70">
           <Text className="text-finance-accent font-semibold flex-row items-center">← Back</Text>
@@ -289,14 +305,11 @@ export default function ManageIPOScreen() {
 
           <View className="mt-4">
             <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-wider mb-2">Expert Remarks</Text>
-            <TextInput
-              className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent h-24"
+            <RichTextEditor
               value={expertRemarks}
-              onChangeText={setExpertRemarks}
+              onChange={setExpertRemarks}
               placeholder="Analysis summary..."
-              placeholderTextColor="#666"
-              multiline
-              textAlignVertical="top"
+              minHeight={200}
             />
           </View>
 
@@ -306,40 +319,31 @@ export default function ManageIPOScreen() {
 
           <View className="mt-2">
             <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-wider mb-2">About Company</Text>
-            <TextInput
-              className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent h-32"
+            <RichTextEditor 
               value={aboutCompany}
-              onChangeText={setAboutCompany}
+              onChange={setAboutCompany}
               placeholder="What does the company do?"
-              placeholderTextColor="#666"
-              multiline
-              textAlignVertical="top"
+              minHeight={250}
             />
           </View>
 
           <View className="mt-4 flex-row space-x-4">
             <View className="flex-1 mr-2">
               <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-wider mb-2">Pros (1 per line)</Text>
-              <TextInput
-                className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent h-32"
+              <RichTextEditor
                 value={pros}
-                onChangeText={setPros}
+                onChange={setPros}
                 placeholder="Good financials&#10;Strong brand"
-                placeholderTextColor="#666"
-                multiline
-                textAlignVertical="top"
+                minHeight={250}
               />
             </View>
             <View className="flex-1 ml-2">
               <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-wider mb-2">Cons (1 per line)</Text>
-              <TextInput
-                className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent h-32"
+              <RichTextEditor
                 value={cons}
-                onChangeText={setCons}
+                onChange={setCons}
                 placeholder="High debt&#10;Legal issues"
-                placeholderTextColor="#666"
-                multiline
-                textAlignVertical="top"
+                minHeight={250}
               />
             </View>
           </View>
@@ -417,5 +421,6 @@ export default function ManageIPOScreen() {
         </View>
       </View>
     </ScrollView>
+    </>
   );
 }

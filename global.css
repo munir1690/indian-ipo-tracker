@@ -32,3 +32,58 @@ body {
   background-color: rgb(var(--finance-dark));
   color: rgb(var(--finance-text));
 }
+
+/* React Quill Restyling */
+.finance-quill .ql-toolbar {
+  background-color: rgb(var(--finance-surface)) !important;
+  border-color: rgb(var(--finance-border)) !important;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.finance-quill .ql-container {
+  border-color: rgb(var(--finance-border)) !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background-color: rgb(var(--finance-dark));
+}
+
+.finance-quill .ql-editor {
+  min-height: 150px;
+}
+
+.finance-quill .ql-stroke {
+  stroke: rgb(var(--finance-text-muted)) !important;
+}
+
+.finance-quill .ql-fill {
+  fill: rgb(var(--finance-text-muted)) !important;
+}
+
+.finance-quill .ql-picker {
+  color: rgb(var(--finance-text-muted)) !important;
+}
+
+.finance-quill button:hover .ql-stroke,
+.finance-quill .ql-picker-label:hover .ql-stroke,
+.finance-quill .ql-active .ql-stroke {
+  stroke: rgb(var(--finance-accent)) !important;
+}
+
+.finance-quill button:hover .ql-fill,
+.finance-quill .ql-picker-label:hover .ql-fill,
+.finance-quill .ql-active .ql-fill {
+  fill: rgb(var(--finance-accent)) !important;
+}
+
+.finance-quill .ql-picker-options {
+  background-color: rgb(var(--finance-surface)) !important;
+  border-color: rgb(var(--finance-border)) !important;
+}
+
+.finance-quill .ql-editor.ql-blank::before {
+  color: rgb(var(--finance-text-muted)) !important;
+  font-style: normal !important;
+}

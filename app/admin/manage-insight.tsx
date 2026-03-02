@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/firebase';
+import { useAuth } from '@/context/AuthContext';
+import RichTextEditor from '@/components/RichTextEditor';
 
 export default function ManageInsightScreen() {
+  const { firstName, lastName } = useAuth();
+  const defaultAuthor = firstName && lastName ? `${firstName} ${lastName}` : 'Alpha Expert';
+  
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [author, setAuthor] = useState('Alpha Expert');
+  const [author, setAuthor] = useState(defaultAuthor);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
@@ -35,10 +40,12 @@ export default function ManageInsightScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      className="flex-1 bg-finance-dark"
-    >
+    <>
+      <Stack.Screen options={{ title: 'New Post' }} />
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1 bg-finance-dark"
+      >
       <ScrollView className="flex-1 px-5 pt-6 pb-20 max-w-3xl w-full mx-auto">
         <View className="flex-row items-center justify-between mb-8">
           <Pressable onPress={() => router.back()} className="p-2 -ml-2">
@@ -75,14 +82,11 @@ export default function ManageInsightScreen() {
 
           <View className="mt-4">
             <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-widest mb-2">Content</Text>
-            <TextInput
-              className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent text-base h-40"
-              placeholder="Write your market analysis or update here..."
-              placeholderTextColor="#666"
+            <RichTextEditor 
               value={content}
-              onChangeText={setContent}
-              multiline
-              textAlignVertical="top"
+              onChange={setContent}
+              placeholder="Write your market analysis or update here..."
+              minHeight={300}
             />
           </View>
         </View>
@@ -95,5 +99,6 @@ export default function ManageInsightScreen() {
         )}
       </ScrollView>
     </KeyboardAvoidingView>
+    </>
   );
 }
