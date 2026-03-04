@@ -5,6 +5,7 @@ import { usePulseDetail } from '@/hooks/useFirestore';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import RichTextRenderer from '@/components/RichTextRenderer';
+import { WebView } from 'react-native-webview';
 import Comments from '@/components/Comments';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
@@ -98,7 +99,20 @@ export default function PulseDetailScreen() {
 
             <Text className="text-3xl font-extrabold text-finance-text tracking-tight leading-tight mb-6">{post.title}</Text>
             
-            <RichTextRenderer content={post.content} />
+            {post.isHtml ? (
+              <View style={{ minHeight: 500 }}>
+                <WebView 
+                  source={{ html: post.content }} 
+                  style={{ backgroundColor: 'transparent', flex: 1 }}
+                  originWhitelist={['*']}
+                  javaScriptEnabled={true}
+                  domStorageEnabled={true}
+                  scrollEnabled={false}
+                />
+              </View>
+            ) : (
+              <RichTextRenderer content={post.content} />
+            )}
 
             {/* If the post relates to an IPO, provide a link */}
             {post.relatedIpoId && (

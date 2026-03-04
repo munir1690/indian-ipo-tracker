@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from 'fir
 import { db } from '@/firebase';
 import { useAuth } from '@/context/AuthContext';
 import RichTextEditor from '@/components/RichTextEditor';
+import { SegmentedControl } from '@/components/SegmentedControl';
 
 export default function ManageInsightScreen() {
   const { firstName, lastName, user } = useAuth();
@@ -13,6 +14,7 @@ export default function ManageInsightScreen() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState(defaultAuthor);
+  const [isHtml, setIsHtml] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   
@@ -32,6 +34,7 @@ export default function ManageInsightScreen() {
           setTitle(data.title || '');
           setContent(data.content || '');
           setAuthor(data.author || '');
+          setIsHtml(!!data.isHtml);
         } else {
           Alert.alert('Error', 'Post not found');
           router.back();
@@ -58,6 +61,7 @@ export default function ManageInsightScreen() {
           title,
           content,
           author,
+          isHtml,
           updatedAt: serverTimestamp(),
         });
       } else {
@@ -65,6 +69,7 @@ export default function ManageInsightScreen() {
           title,
           content,
           author,
+          isHtml,
           authorId: user?.uid || null,
           date: new Date().toISOString(),
           timestamp: serverTimestamp(),
@@ -129,13 +134,36 @@ export default function ManageInsightScreen() {
           </View>
 
           <View className="mt-4">
-            <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-widest mb-2">Content</Text>
-            <RichTextEditor 
-              value={content}
-              onChange={setContent}
-              placeholder="Write your market analysis or update here..."
-              minHeight={300}
+            <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-widest mb-2">Content Mode</Text>
+            <SegmentedControl
+              options={['Rich Text', 'Raw HTML']}
+              selectedOption={isHtml ? 'Raw HTML' : 'Rich Text'}
+              onOptionPress={(opt) => setIsHtml(opt === 'Raw HTML')}
             />
+          </View>
+
+          <View className="mt-4">
+            <Text className="text-finance-textMuted text-xs font-bold uppercase tracking-widest mb-2">Content</Text>
+            {isHtml ? (
+              <TextInput
+                className="bg-finance-dark text-finance-text p-4 rounded-xl border border-finance-border focus:border-finance-accent text-base"
+                placeholder="<html><body><h1>Raw HTML here...</h1></body></html>"
+                placeholderTextColor="#666"
+                value={content}
+                onChangeText={setContent}
+                multiline
+                style={{ minHeight: 300, textAlignVertical: 'top' }}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            ) : (
+              <RichTextEditor 
+                value={content}
+                onChange={setContent}
+                placeholder="Write your market analysis or update here..."
+                minHeight={300}
+              />
+            )}
           </View>
         </View>
 

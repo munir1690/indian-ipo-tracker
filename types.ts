@@ -35,6 +35,7 @@ export interface MarketUpdate {
   author?: string;
   authorId?: string;
   relatedIpoId?: string; // Optional property linking a pulse post to a specific IPO
+  isHtml?: boolean; // Whether content is raw HTML
 }
 
 export interface UserComment {
